@@ -1,0 +1,52 @@
+---
+- name: Check Kubelet Status
+  command: systemctl is-active kubelet
+  ignore_errors: true
+  failed_when: false
+  register: kubelet_is_active
+
+- name: Copy the join command file to nodes
+  copy: 
+    src: "{{ role_path }}/files/join-command" 
+    dest: /tmp/join-command.sh 
+    mode: 0777
+  when: kubelet_is_active.rc != 0
+
+- name: Add node name in join-command.sh
+  lineinfile:
+    path: /tmp/join-command.sh
+    insertafter: '.*'
+    line: ' --node-name={{ inventory_hostname }}'
+  when: kubelet_is_active.rc != 0
+
+- name: Join the node to cluster
+  command: bash /tmp/join-command.sh
+  when: kubelet_is_active.rc != 0
+
+# - name: Setup kubeconfig for ansible user ( enable kubectl )
+#   shell: "{{ item }}"
+#   with_items:
+#   - mkdir -p /home/{{ ansible_user }}/.kube
+#   - cp /etc/kubernetes/kubelet.conf /home/{{ ansible_user }}/.kube/config
+#   - chown {{ ansible_user }}:{{ ansible_user }} /home/{{ ansible_user }}/.kube/config
+#   - chmod 755 /var/lib/kubelet/
+#   - chown {{ ansible_user }}:{{ ansible_user }} /var/lib/kubelet/pki/kubelet-client*.pem
+#   when: kubelet_is_active.rc != 0
+
+# - name: Get user group name
+#   command: id -gn
+#   register: user_group
+#   become_user: "{{ ansible_user }}"
+
+# - name: Create k8s deployment directory
+#   file:
+#     path: /home/{{ ansible_user }}/k8s/deployment
+#     state: directory
+
+# - name: Change k8s directory owner and group
+#   file:
+#     path: /home/{{ ansible_user }}/k8s
+#     state: directory
+#     owner: "{{ ansible_user }}"
+#     group: "{{ user_group.stdout }}"
+#     recurse: yes

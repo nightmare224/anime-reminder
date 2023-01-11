@@ -1,0 +1,51 @@
+---
+- name: Check Kubelet Status
+  command: systemctl is-active kubelet
+  ignore_errors: true
+  failed_when: false
+  register: kubelet_is_active
+
+- name: Reset kubeadm
+  command: kubeadm reset -f
+  ignore_errors: yes
+  when: kubelet_is_active.rc != 0
+
+# Can see all parameter here: https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-init/
+- name: Initialize the Kubernetes cluster using kubeadm
+  command: |
+    kubeadm init \
+      --apiserver-advertise-address="{{ node_ip }}" \
+      --pod-network-cidr=10.240.0.0/16 \
+      --node-name={{ inventory_hostname }}
+  vars:
+    node_ip: "{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
+  when: kubelet_is_active.rc != 0
+
+# setup kube config file for the vagrant user (not sure what is doing)
+- name: Setup kubeconfig for ansible user
+  command: "{{ item }}"
+  with_items:
+  - mkdir -p /home/{{ ansible_user }}/.kube
+  - cp /etc/kubernetes/admin.conf /home/{{ ansible_user }}/.kube/config
+  - chown {{ ansible_user }}:{{ ansible_user }} /home/{{ ansible_user }}/.kube/config
+  when: kubelet_is_active.rc != 0
+
+- name: Create k8s configmap directory
+  file:
+    path: /home/{{ ansible_user }}/k8s/{{ item }}
+    state: directory
+  loop:
+    - deployment
+    - configmap
+  become_user: "{{ ansible_user }}"
+
+- name: Generate join command script to localhost
+  command: kubeadm token create --print-join-command
+  register: join_command
+
+- name: Copy join command to local files
+  copy:
+    dest: "{{ playbook_dir }}/roles/k8s-worker-init/files/join-command"
+    content: "{{ join_command.stdout_lines[0] }}"
+  delegate_to: localhost
+  become_user: "{{ lookup('env', 'USER') }}"

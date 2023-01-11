@@ -1,0 +1,36 @@
+---
+- name: Check if docker has installed
+  command: docker -v
+  ignore_errors: true
+  failed_when: false
+  register: docker_has_installed
+
+- name: Install docker
+  apt:
+    update_cache: yes
+    name: docker.io
+  when: docker_has_installed.rc != 0
+
+- name: Install docker sdk
+  pip:
+    name: docker
+  when: docker_has_installed.rc != 0
+
+- name: Start docker
+  service:
+    name: docker
+    state: started
+
+- name: Add current ansible user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    group: docker
+
+- name: reset ssh connection to allow user changes to affect ansible user
+  meta: reset_connection
+
+- name: Set Cgroup driver to systemd and enable quay.io registry (or it will get x509 error )
+  lineinfile:
+    path: /etc/docker/daemon.json
+    line: '{"exec-opts": ["native.cgroupdriver=systemd"],"insecure-registries": ["quay.io"]}'
+    create: yes

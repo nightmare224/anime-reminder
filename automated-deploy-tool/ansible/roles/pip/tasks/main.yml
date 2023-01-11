@@ -1,0 +1,14 @@
+---
+- name: Check if pip has installed
+  command: pip --version
+  ignore_errors: true
+  failed_when: false
+  register: pip_has_installed
+
+- name: Install pip
+  apt:
+    name: pip
+    update_cache: yes
+  when: pip_has_installed.rc != 0
+
+

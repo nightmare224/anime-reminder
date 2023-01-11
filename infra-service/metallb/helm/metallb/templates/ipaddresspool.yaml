@@ -1,0 +1,8 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: master-node
+  namespace: metallb-system
+spec:
+  addresses:
+  - {{ .Values.loadBalancer.ip }}/32

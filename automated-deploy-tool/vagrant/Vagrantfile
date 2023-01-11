@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  ## Master ## 
+  config.vm.define "k8s-master" do |node|
+    node.vm.box = "starboard/ubuntu-arm64-20.04.5"
+    node.vm.box_version = "20221120.20.40.0"
+    node.vm.box_download_insecure = true
+    node.vm.hostname = "k8s-master"
+    node.vm.network "private_network", type: "dhcp"
+
+    node.vm.provider "VMware" do |vm|
+      vm.name = "k8s-master"        
+    end
+
+    node.vm.provider "vmware_desktop" do |v|
+      v.ssh_info_public = true
+      v.gui = true
+      v.linked_clone = false
+      v.vmx["ethernet0.virtualdev"] = "vmxnet3"
+      # Customize the amount of memory on the VM:
+      v.vmx["memsize"] = "4096"
+      v.vmx["numvcpus"] = "2"
+    end
+  end
+
+  ## Worker 1 ## 
+  config.vm.define "k8s-worker1" do |node|
+    node.vm.box = "starboard/ubuntu-arm64-20.04.5"
+    node.vm.box_version = "20221120.20.40.0"
+    node.vm.box_download_insecure = true
+    node.vm.hostname = "k8s-worker1"
+    node.vm.network "private_network", type: "dhcp"
+
+    node.vm.provider "VMware" do |vm|
+      vm.name = "k8s-worker1"        
+    end
+
+    node.vm.provider "vmware_desktop" do |v|
+      v.ssh_info_public = true
+      v.gui = true
+      v.linked_clone = false
+      v.vmx["ethernet0.virtualdev"] = "vmxnet3"
+      # Customize the amount of memory on the VM:
+      v.vmx["memsize"] = "4096"
+      v.vmx["numvcpus"] = "2"
+    end
+  end
+
+end

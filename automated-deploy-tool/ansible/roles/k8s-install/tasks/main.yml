@@ -1,0 +1,90 @@
+---
+- name: Check if kubeadm install or not
+  command: kubeadm version
+  ignore_errors: true
+  failed_when: false
+  register: kubeadm_has_installed
+
+- name: Upgrade containerd to 1.6
+  shell: |
+    mkdir -p /tmp/containerd
+    cd /tmp/containerd
+    wget https://github.com/containerd/containerd/releases/download/v1.6.15/containerd-1.6.15-linux-arm64.tar.gz
+    tar xvf containerd-1.6.15-linux-arm64.tar.gz
+    systemctl stop containerd
+    cd bin
+    cp * /usr/bin/
+    systemctl start containerd
+  when: kubeadm_has_installed.rc != 0
+
+# Need this, or the apt respository will failed "apt cache update failed"
+# Get public key to verify the signature of a release file
+- name: Add an apt signing key for Kubernetes
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  when: kubeadm_has_installed.rc != 0
+
+- name: Install some packages used by apt respository for Kubernetes
+  apt:
+    name: 
+      - apt-transport-https
+      - ca-certificates
+      - curl
+  when: kubeadm_has_installed.rc != 0
+
+# Although https://apt.kubernets.io is in offical doc, it is not working.
+- name: Adding apt respository for Kubernetes
+  apt_repository:
+    repo: deb http://packages.cloud.google.com/apt/ kubernetes-xenial main
+    state: present
+    filename: kubernetes
+  when: kubeadm_has_installed.rc != 0
+
+# Kubelet will not start if the system has swap enabled
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Install Kubernets binaries
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - kubelet=1.26.0-00
+      - kubeadm=1.26.0-00
+      - kubectl=1.26.0-00
+  when: kubeadm_has_installed.rc != 0
+
+- name: Configure node ip and hostname
+  lineinfile:
+    path: /etc/default/kubelet
+    line: KUBELET_EXTRA_ARGS=--node-ip={{ node_ip }} --hostname-override={{ inventory_hostname }}
+    create: yes
+  vars:
+    node_ip: "{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
+  when: kubeadm_has_installed.rc != 0
+
+- name: Restart docker
+  service:
+    name: docker
+    daemon_reload: yes
+    state: restarted
+  when: kubeadm_has_installed.rc != 0
+
+- name: Restart kubelet
+  service:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted
+  when: kubeadm_has_installed.rc != 0
