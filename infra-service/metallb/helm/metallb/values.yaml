@@ -330,6 +330,3 @@ speaker:
 crds:
   enabled: true
   validationFailurePolicy: Fail
-
-loadBalancer:
-  ip: 192.168.2.185

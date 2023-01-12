@@ -1,3 +1,4 @@
 # ignore all
 *.DS_Store
 *__pycache__
+*.vagrant

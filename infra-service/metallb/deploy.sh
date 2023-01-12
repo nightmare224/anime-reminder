@@ -15,10 +15,10 @@ function log() {
 main() {
   log "INFO" "### Installing ${SERVICE_NAME} ###"
   
-  if [[ ${LB_EXTERNEL_IP} == "" ]]; then
-    log "INFO" "### Please input external load balancer IP ###"
-    read -p 'IP address: ' LB_EXTERNEL_IP
-  fi
+  # if [[ ${LB_EXTERNEL_IP} == "" ]]; then
+  #   log "INFO" "### Please input external load balancer IP ###"
+  #   read -p 'IP address: ' LB_EXTERNEL_IP
+  # fi
 
   if [[ ${ret_val} -eq 0 ]]; then
     log "INFO" "Installing ${SERVICE_NAME} with Helm"
@@ -28,8 +28,8 @@ main() {
       --namespace ${SERVICE_NAMESPACE} \
       --install \
       --wait \
-      --timeout=300s \
-      --set loadBalancer.ip=${LB_EXTERNEL_IP}
+      --timeout=300s #\
+      # --set loadBalancer.ip=${LB_EXTERNEL_IP}
   fi
 }
 
