@@ -3,8 +3,7 @@ from contextlib import contextmanager
 
 from sqlalchemy.exc import IntegrityError
 from lib.db.db_util import get_db_sessionmaker, Base
-# from api.lib.exceptions import OtherConflict
-
+from lib.api.exceptions import OtherConflict
 
 DEFAULT_SESSION_NAME = "default"
 Base = Base
@@ -60,8 +59,7 @@ class DBManager():
             session.commit()
         except IntegrityError as e:
             session.rollback()
-            raise Exception
-            # raise OtherConflict(e.orig.pgerror)
+            raise OtherConflict(e.orig.pgerror)
         except Exception as e:
             session.rollback()
             raise e
