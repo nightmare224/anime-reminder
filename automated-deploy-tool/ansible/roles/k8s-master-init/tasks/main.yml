@@ -15,6 +15,7 @@
   command: |
     kubeadm init \
       --apiserver-advertise-address="{{ node_ip }}" \
+      --apiserver-cert-extra-sans="{{ node_ip }}" \
       --pod-network-cidr=10.240.0.0/16 \
       --node-name={{ inventory_hostname }}
   vars:

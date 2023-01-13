@@ -3,4 +3,4 @@
 # Declare variables to be passed into your templates.
 
 loadBalancer:
-  ip: 192.168.2.185
+  ip: 192.168.2.186

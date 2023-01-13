@@ -1,0 +1,13 @@
+---
+- name: Check if k9s has installed
+  command: k9s version
+  ignore_errors: true
+  failed_when: false
+  register: k9s_has_installed
+
+- name: Copy k9s binary file to /usr/local/bin
+  copy:
+    src: k9s
+    dest: /usr/local/bin/k9s
+    mode: "0755"
+  when: k9s_has_installed.rc != 0
