@@ -40,11 +40,11 @@
     - { role: deploy-service, service_name: kubernetes-dashboard, service_path: ../../monitor-service/kubernetes-dashboard }
   tags: k8s
 
-# - name: Install service required package # Install open-iscsi nfs-common
-#   hosts: all
-#   roles:
-#     - { role: require-packet, become: yes }
-#   tags: k8s
+- name: Install service requirement # Install open-iscsi nfs-common
+  hosts: all
+  roles:
+    - { role: service-requirement, become: yes }
+  tags: infra-service
 
 - name: Deploy infra service
   hosts: master
@@ -55,3 +55,10 @@
     - { role: deploy-service, service_name: longhorn, service_path: ../../infra-service/longhorn }
     - { role: deploy-service, service_name: postgresql, service_path: ../../app-service/postgresql }
   tags: infra-service
+
+- name: Deploy app service
+  hosts: master
+  roles:
+    - { role: deploy-service, service_name: postgresql, service_path: ../../app-service/postgresql }
+    - { role: deploy-service, service_name: anime-reminder, service_path: ../../app-service/anime-reminder }
+  tags: app-service

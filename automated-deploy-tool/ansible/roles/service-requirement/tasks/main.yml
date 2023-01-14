@@ -1,0 +1,6 @@
+---
+- name: Install longhorn required packet
+  apt:
+    name: 
+      - open-iscsi
+      - nfs-common
