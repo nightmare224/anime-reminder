@@ -31,15 +31,15 @@ function deploy() {
 main() {
 
   log "INFO" "Installing ${SERVICE_NAME} with Helm"
+  # would stuck with no reason, but still work normally
   helm upgrade ${SERVICE_NAME} ${HELM_TEMPLATE_PATH} \
-    # --values ${HELM_TEMPLATE_PATH}values.yaml \
-    -f ${ENV_CONFIG}/values.yaml \
+    --values ${HELM_TEMPLATE_PATH}values.yaml \
     --create-namespace \
     --namespace ${SERVICE_NAMESPACE} \
     --install \
     --wait \
-    --timeout=300s
-
+    --timeout=60s 2>/dev/null
+  
   log "INFO" "Deploy an self-sign Issuer."
   deploy ${ISSUER_PATH}/self-sign-issuer.yaml
 
