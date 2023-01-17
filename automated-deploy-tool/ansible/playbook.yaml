@@ -56,10 +56,10 @@
     - { role: deploy-service, service_name: cert-manager, service_path: ../../infra-service/cert-manager }
   tags: infra-service
 
-# - name: Issue Certificate
-#   hosts: master
-#   roles:
-#     - { role: issue-cert, service_name: cert-manager, service_path: ../../infra-service/cert-manager }
+- name: Issue Certificate
+  hosts: master
+  roles:
+    - { role: issue-cert, service_name: cert-manager, cert_service_name: anime-reminder }
 
 - name: Deploy app service
   hosts: master

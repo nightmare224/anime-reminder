@@ -1,0 +1,8 @@
+---
+- name: Issue certificate of {{ cert_service_name }}
+  shell: |
+    inifile=/home/{{ ansible_user }}/k8s/deployment/{{ cert_service_name }}/config.ini
+    source <(grep = ${inifile})
+    bash /home/{{ ansible_user }}/k8s/deployment/{{ service_name }}/setup.sh ${SERVICE_NAMESPACE} ${SERVICE_NAME} ${DOMAIN_NAME}
+  args:
+    executable: /bin/bash
