@@ -1,0 +1,10 @@
+### create a selfsign issuser
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+ name: self-sign-issuer-tls
+ namespace: cert-manager
+spec:
+ selfSigned: {}
+
+---

@@ -51,10 +51,10 @@ ingress:
       paths:
         - path: /animereminder/api
           pathType: Prefix
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls:
+    - secretName: anime-reminder-tls-secret
+      hosts:
+        - sc23.group40.io
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

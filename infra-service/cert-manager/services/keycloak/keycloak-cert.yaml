@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+ name: keycloak-cert
+ # the ns should be the same as service's
+ namespace: keycloak
+spec:
+ # name of the tls secret to store the generated certificate/key pair
+ secretName: keycloak-tls-secrets
+ isCA: true
+ issuerRef:
+   name: keycloak-self-sign-issuer-tls
+   kind: Issuer
+ commonName: "keycloak-signed-ca"
+ dnsNames:
+ - core.keycloak.ai-platform
+
+---

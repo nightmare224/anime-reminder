@@ -53,8 +53,13 @@
     - { role: deploy-service, service_name: metallb, service_path: ../../infra-service/metallb }
     - { role: deploy-service, service_name: ingress-nginx, service_path: ../../infra-service/ingress-nginx }
     - { role: deploy-service, service_name: longhorn, service_path: ../../infra-service/longhorn }
-    - { role: deploy-service, service_name: postgresql, service_path: ../../app-service/postgresql }
+    - { role: deploy-service, service_name: cert-manager, service_path: ../../infra-service/cert-manager }
   tags: infra-service
+
+# - name: Issue Certificate
+#   hosts: master
+#   roles:
+#     - { role: issue-cert, service_name: cert-manager, service_path: ../../infra-service/cert-manager }
 
 - name: Deploy app service
   hosts: master

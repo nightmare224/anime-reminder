@@ -1,0 +1,10 @@
+### create a selfsign issuser
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+ name: keycloak-self-sign-issuer-tls
+ namespace: keycloak
+spec:
+ selfSigned: {}
+
+---

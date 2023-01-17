@@ -1,0 +1,10 @@
+### create a selfsign issuser
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+ name: efk-self-sign-issuer-tls
+ namespace: efk-system
+spec:
+ selfSigned: {}
+
+---
