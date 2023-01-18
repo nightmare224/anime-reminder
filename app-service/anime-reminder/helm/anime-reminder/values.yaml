@@ -51,6 +51,12 @@ ingress:
       paths:
         - path: /animereminder/api
           pathType: Prefix
+          serviceName: anime-reminder
+          servicePort: 80
+        - path: /auth
+          pathType: Prefix
+          serviceName: keycloak-http
+          servicePort: 80
   tls:
     - secretName: anime-reminder-tls-secret
       hosts:

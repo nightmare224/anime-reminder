@@ -131,6 +131,8 @@ extraEnv: |
     value: efreet224
   - name: PROXY_ADDRESS_FORWARDING
     value: "true"
+  - name: KEYCLOAK_IMPORT
+    value: /realm/realm-import.json
 # Additional environment variables for Keycloak mapped from Secret or ConfigMap
 extraEnvFrom: ""
 
@@ -223,11 +225,20 @@ startupScripts:
   #
   # echo 'Hello from my custom startup script!'
 
+extraConfigMap:
+  name: realm-import
+
 # Add additional volumes, e. g. for custom themes
-extraVolumes: ""
+extraVolumes: |
+  - name: realm-import
+    configMap:
+      name: realm-import
 
 # Add additional volumes mounts, e. g. for custom themes
-extraVolumeMounts: ""
+extraVolumeMounts: |
+  - name: realm-import
+    mountPath: "/realm/"
+    readOnly: true
 
 # Add additional ports, e. g. for admin console or exposing JGroups ports
 extraPorts: []
@@ -259,7 +270,7 @@ service:
   labels: {}
   # key: value
   # The Service type
-  type: NodePort
+  type: ClusterIP
   # Optional IP for the load balancer. Used for services of type LoadBalancer only
   loadBalancerIP: ""
   # The http Service port
@@ -292,7 +303,7 @@ service:
 
 ingress:
   # If `true`, an Ingress is created
-  enabled: true
+  enabled: false
   # The name of the Ingress Class associated with this ingress
   ingressClassName: ""
   # The Service port targeted by the Ingress
@@ -316,10 +327,7 @@ ingress:
         - path: /
           pathType: Prefix
   # TLS configuration
-  tls:
-    - hosts:
-        - keycloak.example.com
-      secretName: ""
+  tls: []
 
   # ingress for console only (/auth/admin)
   console:
