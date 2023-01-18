@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Anime Reminder </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/home.css') }}">
+</head>
+<body>
+    <h1>
+        <span class="blue"></span>Welcome to Anime Reminder<span class="blue"></span>
+        <!-- <span class="yellow">Responsive</pan> -->
+    </h1>
+        
+    <table class="container">
+        <thead>
+        <tr>
+            <th><h1>Anime Name</h1></th>
+            <!-- <th><h1>Views</h1></th>
+            <th><h1>Clicks</h1></th>
+            <th><h1>Average</h1></th> -->
+        </tr>
+        </thead>
+        <tbody id="animetb1">
+        <tr>
+        </tr>
+        </tbody>
+    </table>
+    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/jquery.js') }}"></script>
+    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/base.js') }}"></script>
+    <script type = "text/javascript" src = "{{ url_for('static', filename = 'js/home.js') }}" ></script>
+    <script>
+        keycloak.access_token = "{{ ACCESS_TOKEN }}";
+        // alert(keycloak.access_token);
+    </script>
+</body>
+
+</html>

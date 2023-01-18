@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Static - Page</title>
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script type = "text/javascript" src = "{{ url_for('static', filename = 'js/user.js') }}" ></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/animetb.css') }}">
+</head>
+<body>
+    <h1>Template - Page</h1>
+    <!-- <button id="btnHello" onClick="sayHello()">Say Hello</button> -->
+    
+    <p></p>
+    <table id="allAnimeTable" class="styled-table">
+        <thead>
+            <tr>
+                <th>Anime Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>John Doe</td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- <script>
+        var allAnime = [
+            {'name': 'Spy Family'},
+            {'name': 'Chainsaw Man'}
+        ]
+        allAnimeTable(allAnime)
+        function allAnimeTable(data){
+            var table = document.getElementById('allAnimeTable')
+            for (var i = 0; i < data.length; i++){
+                var row = `<tr><td>${data[i].name}</td></tr>`
+                table.innerHTML += row
+            }
+        }
+    </script> -->
+</body>
+</html>

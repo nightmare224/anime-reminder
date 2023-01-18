@@ -1,0 +1,76 @@
+{
+    "permissions": [
+        {
+            "name": "createPermission",
+            "allow_roles": ["Super Admin"]
+        },
+        {
+            "name": "getCompany",
+            "allow_roles": ["Super Admin"]
+        },
+        {
+            "name": "getOwnCompany",
+            "allow_roles": ["Super Admin", "Company Admin", "Project Admin", "Super Developer", "Developer", "Label Manager"]
+        },
+        {
+            "name": "createCompany",
+            "allow_roles": ["Super Admin"]
+        },        
+        {
+            "name": "editCompany",
+            "allow_roles": ["Super Admin"]
+        },        
+        {
+            "name": "editCompanyStatus",
+            "allow_roles": ["Super Admin"]
+        },
+        {
+            "name": "getProject",
+            "allow_roles": ["Super Admin", "Company Admin"]
+        },
+        {
+            "name": "getOwnProject",
+            "allow_roles": ["Super Admin", "Company Admin", "Project Admin", "Super Developer", "Developer", "Label Manager"]
+        },
+        {
+            "name": "createProject",
+            "allow_roles": ["Company Admin"]
+        },        
+        {
+            "name": "editProject",
+            "allow_roles": ["Company Admin"]
+        },
+        {
+            "name": "editProjectStatus",
+            "allow_roles": ["Company Admin"]
+        },
+        {
+            "name": "getUser",
+            "allow_roles": ["Super Admin"]
+        },
+        {
+            "name": "getCompanyUser",
+            "allow_roles": ["Super Admin", "Company Admin", "Project Admin"]
+        },
+        {
+            "name": "getProjectUser",
+            "allow_roles": ["Super Admin", "Company Admin", "Project Admin"]
+        },
+        {
+            "name": "createUser",
+            "allow_roles": ["Super Admin"]
+        },
+        {
+            "name": "createCompanyUser",
+            "allow_roles": ["Super Admin", "Company Admin"]
+        },        
+        {
+            "name": "editCompanyUser",
+            "allow_roles": ["Company Admin"]
+        },
+        {
+            "name": "editProjectUser",
+            "allow_roles": ["Company Admin", "Project Admin"]
+        }
+    ]
+}
