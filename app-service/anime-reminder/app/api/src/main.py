@@ -4,12 +4,12 @@ from configparser import ConfigParser
 from urllib.parse import quote as urlquote
 from flask import Flask
 
+from keycloakOIDC import KeycloakOIDCBackendFlask
 from lib.db.db_manager import DBManager
 # controller
 from controllers.user_controller import user_controller
-
-# import to create db
-import models.db.user
+from controllers.anime_controller import anime_controller
+from controllers.error_controller import error_controller
 
 
 ##### Setting #####
@@ -33,7 +33,11 @@ DBManager().db_uri(
 app = Flask(__name__)
 # register controller
 app.register_blueprint(user_controller)
+app.register_blueprint(anime_controller)
+app.register_blueprint(error_controller)
 
+# keycloak
+koidc = KeycloakOIDCBackendFlask(f"./lib/keycloak/secrets/anime-reminder-secrets.json")
 
 if __name__ == '__main__':
     app.run(
