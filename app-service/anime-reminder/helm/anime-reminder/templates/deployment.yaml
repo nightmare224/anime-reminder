@@ -61,3 +61,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      hostAliases:
+        - ip: {{ .Values.loadBalancer.ip }}
+          hostnames:
+          - sc23.group40.io

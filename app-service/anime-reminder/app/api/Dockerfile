@@ -28,7 +28,7 @@ COPY ${SRCCODE_PATH} /${WORKDIR_PATH}/${SRCCODE_PATH}
 RUN pip3 install -r ${SRCCODE_PATH}/requirements.txt
 
 ## Install custom python packages
-# RUN cd /opt/apServer/lib/keycloak/keycloakOIDC-0.0.1/; python3 /opt/apServer/lib/keycloak/keycloakOIDC-0.0.1/setup.py install
+RUN cd /${WORKDIR_PATH}/${SRCCODE_PATH}/lib/keycloak/keycloakOIDC-0.0.1/; pip3 install .
 
 ### Service port number
 EXPOSE ${SERVICE_PORT}

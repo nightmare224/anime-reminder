@@ -14,6 +14,8 @@ function log() {
 
 main() {
 
+  LB_EXTERNEL_IP=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
   log "INFO" "Installing ${SERVICE_NAME} with Helm"
   helm upgrade ${SERVICE_NAME} ${HELM_TEMPLATE_PATH} \
     --values ${HELM_TEMPLATE_PATH}values.yaml \
@@ -21,7 +23,8 @@ main() {
     --namespace ${SERVICE_NAMESPACE} \
     --install \
     --wait \
-    --timeout=600s
+    --timeout=600s \
+    --set loadBalancer.ip=${LB_EXTERNEL_IP}
 }
 
 main "$@"

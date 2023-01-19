@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# ABSPATH=`readlink -f $0`
-# DIRPATH=`dirname $ABSPATH`
-# cd ${DIRPATH}
+ABSPATH=`readlink -f $0`
+DIRPATH=`dirname $ABSPATH`
+cd ${DIRPATH}
 
 ### Load conf/config.ini configuration file ###
 source <(grep = config.ini)
