@@ -3,6 +3,4 @@ Flask-Cors==3.0.10
 httplib2==0.20.2
 psycopg2==2.9.5
 PyJWT==2.3.0
-SQLAlchemy==1.4.17
 urllib3==1.26.8
-dataclass-type-validator==0.1.2

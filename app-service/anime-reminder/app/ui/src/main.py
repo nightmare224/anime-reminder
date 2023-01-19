@@ -17,7 +17,7 @@ config_parser = ConfigParser()
 config_parser.read("conf/config.ini")
 
 # init flask app
-app = Flask(__name__)
+app = Flask(__name__, static_url_path="/animereminder/ui")
 # register controller
 app.register_blueprint(user_controller)
 app.config['OIDC_CALLBACK_ROUTE'] = '/animereminder/ui/_oidc_callback'
@@ -25,11 +25,11 @@ koidc = KeycloakOIDCFrontendFlask(app, "./lib/keycloak/secrets/anime-reminder-se
 
 @app.context_processor
 def global_var():
-    print("access token:", koidc.access_token)
     return dict(
         # USER_NAME = koidc.verify_and_decode_token(koidc.access_token)["username"],
         # USER_EMAIL = koidc.verify_and_decode_token(koidc.access_token)["email"],
-        ACCESS_TOKEN = koidc.access_token
+        ACCESS_TOKEN = koidc.access_token,
+        USER_ID = koidc.verify_and_decode_token(koidc.access_token)["sub"]
     )
 
 if __name__ == '__main__':
@@ -37,5 +37,5 @@ if __name__ == '__main__':
         host = config_parser["FLASK"]["Host"],
         port = config_parser["FLASK"]["Port"],
         debug = config_parser["FLASK"]["DebugMode"],
-        ssl_context='adhoc'
+        # ssl_context='adhoc'
     )
