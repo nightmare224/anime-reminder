@@ -38,7 +38,7 @@ class User_Anime_Reminder_DB(Base):
     )
     season = Column(
         String(length = 16),
-        nullable = False
+        primary_key=True, nullable = False
     )
     episode = Column(
         String(length = 16),
