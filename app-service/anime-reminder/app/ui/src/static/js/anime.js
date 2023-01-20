@@ -13,16 +13,31 @@ $("document").ready(function(){
         for (var i = 0; i < reminder.length; i++){
             var row = `
             <tr>
-                <td><h2><a href="#addar" rel="modal:open" style="text-decoration: none">${reminder[i].season}</a></h2></td>
-                <td><h2><a href="#addar" rel="modal:open" style="text-decoration: none">${reminder[i].episode}</a></h2></td>
+                <td class="season"><h2><a href="#addar" rel="modal:open" style="text-decoration: none">${reminder[i].season}</a></h2></td>
+                <td class="episode"><h2><a href="#addar" rel="modal:open" style="text-decoration: none">${reminder[i].episode}</a></h2></td>
                 <td id="deltd"><h3 id="delh1">x<h3></td>
             </tr>`;
             $("#artbbody").append(row);
         }
-        // location.reload();
     });
     var sspinner = $("#sspinner").spinner();
     var espinner = $("#espinner").spinner();
+    // bind the future td
+    $("#artbbody").on('click', 'td', function(){
+        // enable the one be clicked
+        if ( $(this).attr("class") === "season" ) {
+            sspinner.spinner("enable")
+            espinner.spinner("disable")
+            sspinner.spinner("value", $(this).text());
+            espinner.spinner("value", $(this).siblings(".episode").text());
+            
+        } else if ( $(this).attr("class") === "episode" ) {
+            espinner.spinner("enable")
+            sspinner.spinner("disable")
+            espinner.spinner("value", $(this).text());
+            sspinner.spinner("value", $(this).siblings(".season").text());
+        }
+    })
     // // var animelist = ["Spy x Famile", "Chainsaw Man"]
     $("#addarbtn").click(function(){
         var payload = {
