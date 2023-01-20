@@ -62,6 +62,10 @@ app.kubernetes.io/instance: {{ .Release.Name }}
   {{- printf "ar-keycloak" -}}
 {{- end -}}
 
+{{- define "anime-reminder.postgresql" -}}
+  {{- printf "ar-postgresql" -}}
+{{- end -}}
+
 {{/*
 Create the name of the service account to use
 */}}

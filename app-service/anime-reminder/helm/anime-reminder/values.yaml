@@ -145,7 +145,7 @@ keycloak:
     - name: DB_VENDOR
       value: postgres
     - name: DB_ADDR
-      value: postgresql.anime-reminder.svc.cluster.local
+      value: ar-postgresql.anime-reminder.svc.cluster.local
     - name: DB_PORT
       value: "5432"
     - name: DB_DATABASE
@@ -424,6 +424,126 @@ keycloak:
       insecureEdgeTerminationPolicy: Redirect
       # TLS termination of the route. Can be `edge`, `passthrough`, or `reencrypt`
       termination: edge
+
+
+postgresql:
+  replicaCount: 1
+
+  image:
+    repository: postgres
+    tag: "11.5"
+    pullPolicy: IfNotPresent
+
+  volumePermissions:
+    enabled: true
+    image:
+      registry: docker.io
+      repository: debian
+      tag: buster-slim
+      ## Specify a imagePullPolicy
+      ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+      ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+      ##
+      pullPolicy: Always
+      ## Optionally specify an array of imagePullSecrets.
+      ## Secrets must be manually created in the namespace.
+      ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+      ##
+      # pullSecrets:
+      #   - myRegistryKeySecretName
+    ## Init container Security Context
+    securityContext:
+      runAsUser: 0
+
+  persistence:
+    enabled: true
+    mountPath: /var/lib/postgresql
+    subPath: ""
+    accessModes:  [ReadWriteOnce]
+    ## Storage Capacity for persistent volume
+    size: 10Gi
+    annotations: {}
+
+  resources: {}
+
+  nodeSelector: {}
+
+  securityContext:
+    enabled: true
+    fsGroup: 1001
+    runAsUser: 1001
+
+  postgresql:
+    username: postgres
+    password: postgres
+    database: postgres
+    port: 5432
+    # initdbArgs 
+    # initdbWalDir
+    dataDir: /var/lib/postgresql/data/pgdata
+
+  service:
+    type: ClusterIP
+    annotations: {}
+
+  ldap:
+    enabled: false
+    pgldapconfig: |-
+      # Reference: https://github.com/larskanis/pg-ldap-sync/blob/master/config/sample-config.yaml
+      # Connection parameters to LDAP server
+      ldap_connection:
+        host: example.com
+        port: 389
+        auth:
+          method: :simple
+          username: cn=admin,dc=example,dc=com
+          password: -password-goes-here-
+
+        # Search parameters for LDAP users which should be synchronized
+      ldap_users:
+        base: OU=People,dc=example,dc=com
+        # LDAP filter (according to RFC 2254)
+        # defines to users in LDAP to be synchronized
+        filter: (&(objectClass=person)(objectClass=organizationalPerson)(givenName=*)(sn=*))
+        # this attribute is used as PG role name
+        name_attribute: sAMAccountName
+        # lowercase name for use as PG role name
+        lowercase_name: true
+      ldap_groups:
+          base: OU=people,dc=example,dc=com
+          filter: (|(cn=group1)(cn=group2)(cn=group3))
+          # this attribute is used as PG role name
+          name_attribute: cn
+          # this attribute must reference to all member DN's of the given group
+          member_attribute: member
+      # Connection parameters to PostgreSQL server
+      # see also: http://rubydoc.info/gems/pg/PG/Connection#initialize-instance_method
+      pg_connection:
+        host: 
+        dbname: postgres # the db name is usually "postgres"
+        user: postgres # the user name is usually "postgres"
+        password: postgres # kubectl get secret --namespace fadi <pod_name> -o jsonpath="{.data.postgresql-password}" | base64 --decode
+      pg_users:
+        # Filter for identifying LDAP generated users in the database.
+        # It's the WHERE-condition to "SELECT rolname, oid FROM pg_roles"
+        filter: rolcanlogin AND NOT rolsuper
+        # Options for CREATE RULE statements
+        create_options: LOGIN
+      pg_groups:
+        # Filter for identifying LDAP generated groups in the database.
+        # It's the WHERE-condition to "SELECT rolname, oid FROM pg_roles"
+        filter: NOT rolcanlogin AND NOT rolsuper
+        # Options for CREATE RULE statements
+        create_options: NOLOGIN
+        grant_options:
+
+    cron:
+      schedule: "*/1 * * * *"
+      repo: ceticasbl/pg-ldap-sync
+      tag: latest
+      restartPolicy: Never
+      mountPath: /workspace
+      subPath: ""
 
 ingress:
   enabled: true

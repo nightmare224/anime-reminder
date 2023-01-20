@@ -1,0 +1,50 @@
+---
+{{- if and (or (.Files.Glob "files/postgresql/postgresql.conf") (.Files.Glob "files/postgresql/pg_hba.conf") (.Files.Glob "files/postgresql/initdbscripts.sh") .Values.postgresql.postgresql.config .Values.postgresql.postgresql.pghba .Values.postgresql.postgresql.initdbscripts) (not .Values.postgresql.postgresql.configMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "anime-reminder.postgresql" . }}-configuration
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: postgresql
+data:
+{{- if (.Files.Glob "files/postgresql/postgresql.conf") }}
+{{ (.Files.Glob "files/postgresql/postgresql.conf").AsConfig | indent 2 }}
+{{- else if .Values.postgresql.postgresql.config }}
+  postgresql.conf: |
+{{- range $key, $value := default dict .Values.postgresql.postgresql.config }}
+    {{ $key | snakecase }}={{ $value }}
+{{- end }}
+{{- end }}
+{{- if (.Files.Glob "files/postgresql/pg_hba.conf") }}
+{{ (.Files.Glob "files/postgresql/pg_hba.conf").AsConfig | indent 2 }}
+{{- else if .Values.postgresql.postgresql.pghba }}
+  pg_hba.conf: |
+{{ .Values.postgresql.postgresql.pghba  | indent 4 }}
+{{- end }}
+{{- if (.Files.Glob "files/postgresql/initdbscripts.sh") }}
+{{ (.Files.Glob "files/postgresql/initdbscripts.sh").AsConfig | indent 2 }}
+{{- else if .Values.postgresql.postgresql.initdbscripts }}
+  initdbscripts.sh: |
+{{ .Values.postgresql.postgresql.initdbscripts  | indent 4 }}
+{{- end }}
+{{- end }}
+#
+# A ConfigMap spec for pgldap-config.yaml 
+# /var/lib/pglda-config.yaml
+#
+{{- if and .Values.postgresql.ldap.enabled .Values.postgresql.ldap.pgldapconfig }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "anime-reminder.postgresql" . }}-pgldap-config
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: postgresql
+data:
+  pgldap-config.yaml: |
+{{ .Values.postgresql.ldap.pgldapconfig | indent 4}}
+{{- end }}
+
+

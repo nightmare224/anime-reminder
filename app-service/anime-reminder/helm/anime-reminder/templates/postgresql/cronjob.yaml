@@ -1,0 +1,34 @@
+---
+{{- if and .Values.postgresql.ldap.enabled .Values.postgresql.ldap.pgldapconfig }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pg-ldap-sync
+spec:
+  schedule: {{ .Values.postgresql.ldap.cron.schedule | quote}} 
+  jobTemplate:
+    metadata:
+      labels:
+        {{- include "anime-reminder.labels" . | nindent 8 }}
+        component: postgresql
+    spec:
+      template:
+        spec:
+          containers:
+          - name: pg-ldap-sync
+            image: {{ .Values.postgresql.ldap.cron.repo }}:{{ .Values.postgresql.ldap.cron.tag }}
+            args: [ "/workspace/pgldap-config.yaml", "-vv"]
+            imagePullPolicy: IfNotPresent
+            volumeMounts:
+            - name: pgldap-config
+              mountPath: {{ .Values.postgresql.ldap.cron.mountPath | quote}}
+              subPath: {{ .Values.postgresql.ldap.cron.subPath | quote}}
+          restartPolicy: {{ .Values.postgresql.ldap.cron.restartPolicy }}
+          volumes:
+          - name: pgldap-config
+            configMap:
+              name: {{ include "anime-reminder.postgresql" . }}-pgldap-config
+              items:
+              - key: pgldap-config.yaml
+                path: pgldap-config.yaml
+{{- end}}

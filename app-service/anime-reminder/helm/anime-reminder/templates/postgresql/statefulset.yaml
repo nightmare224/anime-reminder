@@ -1,0 +1,189 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "anime-reminder.postgresql" . }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: postgresql
+spec:
+  serviceName: {{ include "anime-reminder.postgresql" . }}-headless
+  replicas: {{ .Values.keycloak.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "anime-reminder.selectorLabels" . | nindent 6 }}
+      component: postgresql
+  template:
+    metadata:
+      name: {{ include "anime-reminder.postgresql" . }}
+      labels:
+        {{- include "anime-reminder.selectorLabels" . | nindent 8 }}
+        component: postgresql
+    spec:
+      {{- if and .Values.postgresql.volumePermissions.enabled .Values.postgresql.persistence.enabled }}
+      initContainers:
+      - name: init-chmod-data
+        image: "{{ .Values.postgresql.volumePermissions.image.repository }}:{{ .Values.postgresql.volumePermissions.image.tag }}"
+        imagePullPolicy: "{{ .Values.postgresql.volumePermissions.image.pullPolicy }}"
+        resources:
+{{ toYaml .Values.postgresql.resources | indent 10 }}
+        command:
+          - sh
+          - -c
+          - |
+            mkdir -p {{ .Values.postgresql.persistence.mountPath }}/data
+            chmod 700 {{ .Values.postgresql.persistence.mountPath }}/data
+            find {{ .Values.postgresql.persistence.mountPath }} -mindepth 1 -maxdepth 1 -not -name ".snapshot" -not -name "lost+found" | \
+              xargs chown -R {{ .Values.postgresql.securityContext.runAsUser }}:{{ .Values.postgresql.securityContext.fsGroup }}
+        securityContext:
+          runAsUser: {{ .Values.postgresql.volumePermissions.securityContext.runAsUser }}
+        volumeMounts:
+        - name: data
+          mountPath: {{ .Values.postgresql.persistence.mountPath }}
+          subPath: {{ .Values.postgresql.persistence.subPath }}
+      {{- end }}
+      containers:
+      - name: postgresql
+        image: "{{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}"
+      {{- if and .Values.postgresql.postgresql.pghba .Values.postgresql.postgresql.config}}
+        args: ["-c", "config_file={{ .Values.postgresql.persistence.mountPath }}/conf/postgresql.conf", "-c", "hba_file={{ .Values.postgresql.persistence.mountPath }}/conf/pg_hba.conf"]
+      {{- end }}
+      {{- if and (not .Values.postgresql.postgresql.pghba) .Values.postgresql.postgresql.config}}
+        args: ["-c", "config_file={{ .Values.postgresql.persistence.mountPath }}/conf/postgresql.conf"]
+      {{- end }}
+      {{- if and .Values.postgresql.postgresql.pghba (not .Values.postgresql.postgresql.config)}}
+        args: ["-c", "hba_file={{ .Values.postgresql.persistence.mountPath }}/conf/pg_hba.conf"]
+      {{- end }}
+        imagePullPolicy: {{ .Values.postgresql.image.pullPolicy | quote }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        env:
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.postgresql.postgresql.password | quote }}
+        - name: POSTGRES_USER
+          value: {{ .Values.postgresql.postgresql.username | quote }}
+        - name: POSTGRES_DB
+          value: {{ .Values.postgresql.postgresql.database | quote }}
+        {{- if .Values.postgresql.postgresql.initdbArgs }}
+        - name: POSTGRES_INITDB_ARGS
+          value: {{ .Values.postgresql.postgresql.initdbArgs | quote }}
+        {{- end }}
+        {{- if .Values.postgresql.postgresql.initdbWalDir }}
+        - name: POSTGRES_INITDB_WALDIR
+          value: {{ .Values.postgresql.postgresql.initdbWalDir | quote }}
+        {{- end }}
+        {{- if .Values.postgresql.persistence.mountPath }}
+        - name: PGDATA
+          value: {{ .Values.postgresql.postgresql.dataDir | quote }}
+        {{- end }}
+{{- if .Values.postgresql.extraEnv }}
+{{ tpl (toYaml .Values.postgresql.extraEnv) $ | indent 8 }}
+{{- end }}
+        ports:
+        - name: postgresql
+          containerPort: {{ .Values.postgresql.postgresql.port }}
+        livenessProbe:
+{{ toYaml .Values.postgresql.livenessProbe | indent 12 }}
+        readinessProbe:
+{{ toYaml .Values.postgresql.readinessProbe | indent 12 }}
+        volumeMounts:
+        {{- if .Values.postgresql.persistence.enabled }}
+        - name: data
+          mountPath: {{ .Values.postgresql.persistence.mountPath }}/data
+          subPath: {{ .Values.postgresql.persistence.subPath }}
+          readOnly: false
+        {{- end }}
+        {{- if or (.Files.Glob "files/postgresql/pg_hba.conf") .Values.postgresql.postgresql.pghba .Values.postgresql.configMap }}
+        - name: postgresql-config-pghba
+          mountPath: {{ .Values.postgresql.persistence.mountPath }}/conf/pg_hba.conf
+          subPath: pg_hba.conf
+          readOnly: false
+        {{- end }}
+        # {{- if or (.Files.Glob "files/docker-entrypoint-initdb.d/*.{sh,sql,sql.gz}") .Values.initdbScriptsConfigMap .Values.initdbScripts }}
+        # - name: custom-init-scripts
+        #   mountPath: /docker-entrypoint-initdb.d/
+        # {{- end }}
+        {{- if or (.Files.Glob "files/postgresql/initdbscripts.sh") .Values.postgresql.postgresql.initdbscripts .Values.postgresql.configMap }}
+        - name: postgresql-config-initdbscripts
+          mountPath: /docker-entrypoint-initdb.d/initdbscripts.sh
+          subPath: initdbscripts.sh
+          readOnly: false
+        {{- end }}
+        {{- if or (.Files.Glob "files/postgresql/postgresql.conf") .Values.postgresql.postgresql.config .Values.postgresql.configMap }}
+        - name: postgresql-config
+          mountPath: {{ .Values.postgresql.persistence.mountPath }}/conf/postgresql.conf
+          subPath: postgresql.conf
+          readOnly: false
+        {{- end }}
+      {{- if .Values.postgresql.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.postgresql.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.postgresql.nodeName }}
+      nodeName: {{ .Values.postgresql.nodeName | quote }}
+      {{- end }}
+      {{- if .Values.postgresql.affinity }}
+      affinity:
+{{ toYaml .Values.postgresql.affinity | indent 8 }}
+      {{- end }}
+      volumes:
+      {{- if or (.Files.Glob "files/postgresql/pg_hba.conf") .Values.postgresql.postgresql.pghba .Values.postgresql.postgresql.configMap}}
+      - name: postgresql-config-pghba
+        configMap:
+          name: {{ include "anime-reminder.postgresql" . }}-configuration
+          items:
+           - key: pg_hba.conf
+             path: pg_hba.conf
+      {{- end }}
+      {{- if or (.Files.Glob "files/postgresql/postgresql.conf") .Values.postgresql.postgresql.config .Values.postgresql.postgresql.configMap}}
+      - name: postgresql-config
+        configMap:
+          name: {{ include "anime-reminder.postgresql" . }}-configuration
+          items:
+           - key: postgresql.conf
+             path: postgresql.conf
+      {{- end }}
+      # {{- if  or (.Files.Glob "files/docker-entrypoint-initdb.d/*.{sh,sql,sql.gz}") .Values.initdbScriptsConfigMap .Values.initdbScripts }}
+      # - name: custom-init-scripts
+      #   configMap:
+      #     name: {{ template "postgresql.fullname" . }}-init-scripts
+      # {{- end }}
+      {{- if or (.Files.Glob "files/postgresql/initdbscripts.sh") .Values.postgresql.postgresql.initdbscripts .Values.postgresql.postgresql.configMap}}
+      - name: postgresql-config-initdbscripts
+        configMap:
+          name: {{ include "anime-reminder.postgresql" . }}-configuration
+          items:
+           - key: initdbscripts.sh
+             path: initdbscripts.sh
+      {{- end }}
+{{- if and .Values.postgresql.persistence.enabled .Values.postgresql.persistence.existingClaim }}
+      - name: data
+        persistentVolumeClaim:
+{{- with .Values.postgresql.persistence.existingClaim }}
+          claimName: {{ tpl . $ }}
+{{- end }}
+{{- else if not .Values.postgresql.persistence.enabled }}
+      - name: data
+        emptyDir: {}
+{{- else if and .Values.postgresql.persistence.enabled (not .Values.postgresql.persistence.existingClaim) }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      {{- with .Values.postgresql.persistence.annotations }}
+        annotations:
+        {{- range $key, $value := . }}
+          {{ $key }}: {{ $value }}
+        {{- end }}
+      {{- end }}
+      spec:
+        accessModes:
+        {{- range .Values.postgresql.persistence.accessModes }}
+          - {{ . | quote }}
+        {{- end }}
+        {{- with .Values.postgresql.persistence.storageClass }}
+        storageClassName: {{ tpl . $ }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.postgresql.persistence.size | quote }}
+{{- end }}

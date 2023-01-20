@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "anime-reminder.postgresql" . }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: postgresql
+{{- with .Values.postgresql.service.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  type: {{ .Values.postgresql.service.type }}
+  {{- if and .Values.postgresql.service.loadBalancerIP (eq .Values.postgresql.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.postgresql.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.postgresql.service.type "LoadBalancer") .Values.postgresql.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+  {{ with .Values.postgresql.service.loadBalancerSourceRanges }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  {{- end }}
+  {{- if and (eq .Values.postgresql.service.type "ClusterIP") .Values.postgresql.service.clusterIP }}
+  clusterIP: {{ .Values.postgresql.service.clusterIP }}
+  {{- end }}
+  ports:
+  - name: postgresql
+    port: {{ .Values.postgresql.postgresql.port }}
+    targetPort: postgresql
+  selector:
+    {{- include "anime-reminder.selectorLabels" . | nindent 4 }}
+    component: postgresql

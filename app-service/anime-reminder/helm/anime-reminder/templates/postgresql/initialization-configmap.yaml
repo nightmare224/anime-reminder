@@ -1,0 +1,20 @@
+{{- if and (or (.Files.Glob "files/postgresql/*.{sh,sql,sql.gz}") .Values.postgresql.initdbScripts) (not .Values.postgresql.initdbScriptsConfigMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "anime-reminder.postgresql" . }}-init-scripts
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: postgresql
+  namespace: {{ .Release.Namespace }}
+{{- with .Files.Glob "files/postgresql/*.sql.gz" }}
+binaryData:
+{{- range $path, $bytes := . }}
+  {{ base $path }}: {{ $.Files.Get $path | b64enc | quote }}
+{{- end }}
+{{- end }}
+data:
+{{- with .Files.Glob "files/postgresql/*.{sh,sql}" }}
+{{ .AsConfig | indent 2 }}
+{{- end }}
+{{- end }}
