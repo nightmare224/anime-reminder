@@ -11,7 +11,7 @@
         <!-- <span class="yellow">Responsive</pan> -->
     </h1>
         
-    <table class="container">
+    <table id="artb" class="container">
         <thead>
         <tr>
             <th><h1>Seasons</h1></th>
@@ -19,17 +19,7 @@
             <th><h1></h1></th>
         </tr>
         </thead>
-        <tbody>
-        <tr>
-            <td><h2>1</h2></td>
-            <td><h2>13</h2></td>
-            <td id="deltd"><h3 id="delh1">x<h3></td>
-        </tr>
-        <tr>
-            <td><h2>2</h2></td>
-            <td><h2>1</h2></td>
-            <td id="deltd"><h3 id="delh1">x<h3></td>
-        </tr>
+        <tbody id="artbbody">
         </tbody>
     </table>
     <table class="container">
@@ -45,8 +35,10 @@
     </table>
     <script type="text/javascript" src = "{{ url_for('static', filename = 'js/jquery.js') }}"></script>
     <script type="text/javascript" src = "{{ url_for('static', filename = 'js/base.js') }}"></script>
+    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/anime.js') }}" ></script>
     <script>
         keycloak.access_token = "{{ ACCESS_TOKEN }}";
+        keycloak.user_id = "{{ USER_ID }}";
     </script>
 </body>
 

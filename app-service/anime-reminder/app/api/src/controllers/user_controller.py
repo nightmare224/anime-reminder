@@ -51,11 +51,16 @@ def create_user():
 # @koidc.require_permission("Default Resource")
 def get_user_anime(user_id):
 
-    
     if not _is_user_exist(user_id):
         _create_user(user_id)
 
-    animes = _get_user_anime(user_id)
+    request_data = request.args
+    param = request_data.to_dict()
+    anime_id = None
+    if "anime_id" in param:
+        anime_id = param["anime_id"]
+        
+    animes = _get_user_anime(user_id, anime_id)
 
     resp = Read(payload = animes)
     return jsonify(resp.payload), resp.status_code
@@ -109,9 +114,7 @@ def edit_user_anime(user_id, anime_id):
     anime_old = _get_user_anime(user_id, anime_id)
     if not anime_old:
         raise OtherNotFound("The anime not found for the user")
-    
-    # resp = Read(anime_old[0].anime_reminder[0].season)
-    # return jsonify(resp.payload), resp.status_code
+
     # The season to episode mapping before update
     season2episode = dict([(r.season, r.episode) for r in anime_old[0].anime_reminder])
  
@@ -141,16 +144,6 @@ def edit_user_anime(user_id, anime_id):
                         episode = reminder.episode
                     )
                 )
-
-        # animes = []
-        # for anime_db in animes_db:
-        #     anime = Anime(
-        #         anime_id=anime_db.anime_id,
-        #         anime_name=anime_db.anime_name
-        #     )
-        #     animes.append(anime)
-
-
 
     resp = Update()
     return jsonify(resp.payload), resp.status_code
