@@ -41,11 +41,7 @@ def create_user():
     except TypeError as e:
         raise OtherBadRequest('Invalid request data: %s'%e)
 
-    user_db = User_DB(
-        user_id = user.user_id
-    )
-    with DBManager().session_ctx() as session:
-        session.add(user_db)
+    user = _create_user()
 
     resp = Create(payload = user)
     return jsonify(resp.payload), resp.status_code
@@ -55,11 +51,15 @@ def create_user():
 # @koidc.require_permission("Default Resource")
 def get_user_anime(user_id):
 
+    
+    if not _is_user_exist(user_id):
+        _create_user(user_id)
+
     users = []
-    with DBManager().session_ctx() as session:
-        users_db = session.query(User_Anime_DB).filter_by(user_id = user_id).all()
-        for user_db in users_db:
-            print(user_db.user_id)
+    # with DBManager().session_ctx() as session:
+    #     users_db = session.query(User_Anime_DB).filter_by(user_id = user_id).all()
+    #     for user_db in users_db:
+    #         print(user_db.user_id)
     with DBManager().session_ctx() as session:
         statement = (
             select(Anime_DB.anime_id, Anime_DB.anime_name)
@@ -89,6 +89,9 @@ def create_user_anime(user_id):
     except TypeError as e:
         raise OtherBadRequest('Invalid request data: %s'%e)
 
+    if not _is_user_exist(user_id):
+        _create_user(user_id)
+
     with DBManager().session_ctx() as session:
         animes_db = session.query(Anime_DB).all()
         for anime_db in animes_db:
@@ -108,3 +111,21 @@ def create_user_anime(user_id):
 
     resp = Create()
     return jsonify(resp.payload), resp.status_code
+
+def _create_user(user_id):
+    user_db = User_DB(
+        user_id = user_id
+    )
+    with DBManager().session_ctx() as session:
+        session.add(user_db)
+
+    return User(user_id = user_id)
+
+def _is_user_exist(user_id):
+    with DBManager().session_ctx() as session:
+        users_db = session.query(User_DB).all()
+        for user_db in users_db:
+            if str(user_id) == str(user_db.user_id):
+                return True
+
+    return False

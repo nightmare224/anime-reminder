@@ -35,6 +35,7 @@ $("document").ready(function(){
                 <td class="deltd" id="deltd"><h3 id="delh1">x<h3></td>
             </tr>`;
             $("#animetb1").append(row);
+            location.reload();
         });
         // clean the input box
         $('input[id=addanimeinput]').val(' ');
