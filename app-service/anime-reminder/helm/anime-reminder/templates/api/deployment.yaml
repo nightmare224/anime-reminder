@@ -1,43 +1,46 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "anime-reminder.fullname" . }}
+  name: {{ include "anime-reminder.api" . }}
   labels:
     {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: api
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .Values.api.autoscaling.enabled }}
+  replicas: {{ .Values.api.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "anime-reminder.selectorLabels" . | nindent 6 }}
+      component: api
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.api.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "anime-reminder.selectorLabels" . | nindent 8 }}
+        component: api
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with .Values.api.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "anime-reminder.serviceAccountName" . }}
+      serviceAccountName: {{ include "anime-reminder.api.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.api.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ include "anime-reminder.api" . }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml .Values.api.securityContext | nindent 12 }}
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
-          {{- if .Values.healthCheck.enabled }}
+          {{- if .Values.api.healthCheck.enabled }}
           livenessProbe:
             httpGet:
               path: /
@@ -48,16 +51,16 @@ spec:
               port: http
           {{- end }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+            {{- toYaml .Values.api.resources | nindent 12 }}
+      {{- with .Values.api.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.api.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.api.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

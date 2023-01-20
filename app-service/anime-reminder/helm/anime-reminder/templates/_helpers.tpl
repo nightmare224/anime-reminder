@@ -11,9 +11,9 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "anime-reminder.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
+    {{- if .Values.fullnameOverride }}
+    {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+    {{- else }}
 {{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
@@ -50,13 +50,29 @@ app.kubernetes.io/name: {{ include "anime-reminder.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{- define "anime-reminder.ui" -}}
+  {{- printf "%s-ui" (include "anime-reminder.fullname" .) -}}
+{{- end -}}
+
+{{- define "anime-reminder.api" -}}
+  {{- printf "%s-api" (include "anime-reminder.fullname" .) -}}
+{{- end -}}
+
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "anime-reminder.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "anime-reminder.fullname" .) .Values.serviceAccount.name }}
+{{- define "anime-reminder.ui.serviceAccountName" -}}
+{{- if .Values.ui.serviceAccount.create }}
+{{- default (include "anime-reminder.ui" .) .Values.ui.serviceAccount.name }}
 {{- else }}
-{{- default "default" .Values.serviceAccount.name }}
+{{- default "default" .Values.ui.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{- define "anime-reminder.api.serviceAccountName" -}}
+{{- if .Values.api.serviceAccount.create }}
+{{- default (include "anime-reminder.api" .) .Values.api.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.api.serviceAccount.name }}
 {{- end }}
 {{- end }}

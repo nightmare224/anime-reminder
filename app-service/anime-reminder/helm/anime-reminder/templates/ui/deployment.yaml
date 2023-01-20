@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "anime-reminder.fullname" . }}-ui
+  name: {{ include "anime-reminder.ui" . }}
   labels:
     {{- include "anime-reminder.labels" . | nindent 4 }}
     component: ui
@@ -27,11 +27,11 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "anime-reminder.serviceAccountName" . }}
+      serviceAccountName: {{ include "anime-reminder.ui.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.ui.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}-ui
+        - name: {{ include "anime-reminder.ui" . }}
           securityContext:
             {{- toYaml .Values.ui.securityContext | nindent 12 }}
           image: "{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag | default .Chart.AppVersion }}"
