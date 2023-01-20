@@ -1,0 +1,23 @@
+{{- if .Values.keycloak.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "anime-reminder.keycloak" . }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+    {{- range $key, $value := .Values.keycloak.autoscaling.labels }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: {{ include "anime-reminder.keycloak" . }}
+  minReplicas: {{ .Values.keycloak.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.keycloak.autoscaling.maxReplicas }}
+  metrics: 
+    {{- toYaml .Values.keycloak.autoscaling.metrics | nindent 4 }}
+  behavior:
+    {{- toYaml .Values.keycloak.autoscaling.behavior | nindent 4 }}
+{{- end }}

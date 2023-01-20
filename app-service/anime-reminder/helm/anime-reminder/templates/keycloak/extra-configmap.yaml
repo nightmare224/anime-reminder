@@ -1,0 +1,12 @@
+{{- if .Values.keycloak.extraConfigMap }}
+{{- $filename := .Values.keycloak.extraConfigMap.name -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.keycloak.extraConfigMap.name }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+data:
+  {{- (.Files.Glob "files/keycloak/*.json").AsConfig | nindent 2 }}
+{{- end }}

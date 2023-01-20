@@ -1,0 +1,161 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "anime-reminder.keycloak" . }}
+  {{- with .Values.keycloak.statefulsetAnnotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+    {{- range $key, $value := .Values.keycloak.statefulsetLabels }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "anime-reminder.selectorLabels" . | nindent 6 }}
+      component: keycloak
+  {{- if not .Values.keycloak.autoscaling.enabled }}
+  replicas: {{ .Values.keycloak.replicaCount }}
+  {{- end }}
+  serviceName: {{ include "anime-reminder.keycloak" . }}-headless
+  podManagementPolicy: {{ .Values.keycloak.podManagementPolicy }}
+  updateStrategy:
+    type: {{ .Values.keycloak.updateStrategy }}
+  template:
+    metadata:
+      annotations:
+        checksum/config-startup: {{ include (print .Template.BasePath "/keycloak/configmap-startup.yaml") . | sha256sum }}
+        checksum/secrets: {{ tpl (toYaml .Values.keycloak.secrets) . | sha256sum }}
+        {{- range $key, $value := .Values.keycloak.podAnnotations }}
+        {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "anime-reminder.selectorLabels" . | nindent 8 }}
+        component: keycloak
+        {{- range $key, $value := .Values.keycloak.podLabels }}
+        {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 8 }}
+        {{- end }}
+    spec:
+    {{- if not .Values.keycloak.skipInitContainers }}
+      {{- if .Values.keycloak.extraInitContainers }}
+      initContainers:
+        {{- with .Values.keycloak.extraInitContainers }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+      containers:
+        - name: keycloak
+          securityContext:
+            {{- toYaml .Values.keycloak.securityContext | nindent 12 }}
+          image: "{{ .Values.keycloak.image.repository }}:{{ .Values.keycloak.image.tag  }}"
+          imagePullPolicy: {{ .Values.keycloak.image.pullPolicy }}
+          command:
+            {{- toYaml .Values.keycloak.command | nindent 12 }}
+          args:
+            {{- toYaml .Values.keycloak.args | nindent 12 }}
+          {{- with .Values.keycloak.lifecycleHooks }}
+          lifecycle:
+          {{- tpl . $ | nindent 12 }}
+          {{- end }}
+          env:
+            {{- with .Values.keycloak.extraEnv }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- with .Values.keycloak.extraEnvFrom }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            - name: http-management
+              containerPort: 9990
+              protocol: TCP
+            {{- with .Values.keycloak.extraPorts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.keycloak.livenessProbe }}
+          livenessProbe:
+            {{- tpl . $ | nindent 12 }}
+          {{- end }}
+          {{- with .Values.keycloak.readinessProbe }}
+          readinessProbe:
+            {{- tpl . $ | nindent 12 }}
+          {{- end }}
+          {{- with .Values.keycloak.startupProbe }}
+          startupProbe:
+            {{- tpl . $ | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.keycloak.resources | nindent 12 }}
+          volumeMounts:
+            {{- range $key, $value := .Values.keycloak.startupScripts }}
+            - name: startup
+              mountPath: "/opt/jboss/startup-scripts/{{ $key }}"
+              subPath: "{{ $key }}"
+              readOnly: true
+            {{- end }}
+            {{- with .Values.keycloak.extraVolumeMounts }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+        {{- with .Values.keycloak.extraContainers }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
+      {{- with .Values.keycloak.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "anime-reminder.keycloak.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.keycloak.podSecurityContext | nindent 8 }}
+      {{- with .Values.keycloak.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      enableServiceLinks: {{ .Values.keycloak.enableServiceLinks }}
+      restartPolicy: {{ .Values.keycloak.restartPolicy }}
+      {{- with .Values.keycloak.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keycloak.affinity }}
+      affinity:
+        {{- tpl . $ | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keycloak.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- tpl . $ | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keycloak.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keycloak.priorityClassName }}
+      priorityClassName: {{ . }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.keycloak.terminationGracePeriodSeconds }}
+      volumes:
+        {{- with .Values.keycloak.startupScripts }}
+        - name: startup
+          configMap:
+            name: {{ include "anime-reminder.keycloak" $ }}-startup
+            defaultMode: 0555
+            items:
+              {{- range $key, $value := . }}
+              - key: {{ $key }}
+                path: {{ $key }}
+              {{- end }}
+        {{- end }}
+        {{- with .Values.keycloak.extraVolumes }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}

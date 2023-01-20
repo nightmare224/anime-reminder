@@ -1,0 +1,49 @@
+{{- if .Values.keycloak.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "anime-reminder.keycloak" . }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+    {{- range $key, $value := .Values.keycloak.networkPolicy.labels }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+spec:
+  policyTypes:
+    - Ingress
+  podSelector:
+    matchLabels:
+      {{- include "anime-reminder.selectorLabels" . | nindent 6 }}
+      component: keycloak
+  ingress:
+    {{- with .Values.keycloak.networkPolicy.extraFrom }}
+    - from:
+        {{- toYaml . | nindent 8 }}
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8443
+        {{ range $.Values.keycloak.extraPorts }}
+        - protocol: {{ default "TCP" .protocol }}
+          port: {{ .containerPort }}
+        {{- end }}
+    {{- end }}
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "anime-reminder.selectorLabels" . | nindent 14 }}
+              component: keycloak
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8443
+        - protocol: TCP
+          port: 9990
+        {{ range .Values.keycloak.extraPorts }}
+        - protocol: {{ default "TCP" .protocol }}
+          port: {{ .containerPort }}
+        {{- end }}
+{{- end }}

@@ -1,0 +1,27 @@
+{{- if and .Values.keycloak.rbac.create .Values.keycloak.rbac.rules }}
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "anime-reminder.keycloak" . }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+rules:
+  {{- toYaml .Values.keycloak.rbac.rules | nindent 2 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "anime-reminder.keycloak" . }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "anime-reminder.keycloak" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "anime-reminder.keycloak.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace | quote }}
+{{- end }}

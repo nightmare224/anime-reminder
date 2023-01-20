@@ -1,0 +1,19 @@
+{{- if .Values.keycloak.podDisruptionBudget -}}
+{{- if .Capabilities.APIVersions.Has "policy/v1" }}
+apiVersion: policy/v1
+{{- else }}
+apiVersion: policy/v1beta1
+{{- end }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "anime-reminder.keycloak" . }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+spec:
+  selector:
+    matchLabels:
+      {{- include "anime-reminder.selectorLabels" . | nindent 6 }}
+      component: keycloak
+  {{- toYaml .Values.keycloak.podDisruptionBudget | nindent 2 }}
+{{- end -}}

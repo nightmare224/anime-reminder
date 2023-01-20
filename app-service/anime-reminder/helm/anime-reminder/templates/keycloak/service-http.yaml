@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "anime-reminder.keycloak" . }}-http
+  {{- with .Values.keycloak.service.annotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+    {{- range $key, $value := .Values.keycloak.service.labels }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: http
+spec:
+  type: {{ .Values.keycloak.service.type }}
+  {{- if and (eq "LoadBalancer" .Values.keycloak.service.type) .Values.keycloak.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.keycloak.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq "LoadBalancer" .Values.keycloak.service.type) .Values.keycloak.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml .Values.keycloak.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  {{- if eq "LoadBalancer" .Values.keycloak.service.type }}
+  externalTrafficPolicy: {{ .Values.keycloak.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if .Values.keycloak.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.keycloak.service.sessionAffinity }}
+    {{- with .Values.keycloak.service.sessionAffinityConfig }}
+  sessionAffinityConfig:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.keycloak.service.httpPort }}
+      targetPort: http
+      {{- if and (or (eq "NodePort" .Values.keycloak.service.type) (eq "LoadBalancer" .Values.keycloak.service.type) ) .Values.keycloak.service.httpNodePort }}
+      nodePort: {{ .Values.keycloak.service.httpNodePort }}
+      {{- end }}
+      protocol: TCP
+    - name: https
+      port: {{ .Values.keycloak.service.httpsPort }}
+      targetPort: https
+      {{- if and (or (eq "NodePort" .Values.keycloak.service.type) (eq "LoadBalancer" .Values.keycloak.service.type) ) .Values.keycloak.service.httpsNodePort }}
+      nodePort: {{ .Values.keycloak.service.httpsNodePort }}
+      {{- end }}
+      protocol: TCP
+    - name: http-management
+      port: {{ .Values.keycloak.service.httpManagementPort }}
+      targetPort: http-management
+      {{- if and (eq "NodePort" .Values.keycloak.service.type) .Values.keycloak.service.httpManagementNodePort }}
+      nodePort: {{ .Values.keycloak.service.httpManagementNodePort }}
+      {{- end }}
+      protocol: TCP
+    {{- with .Values.keycloak.service.extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- include "anime-reminder.selectorLabels" . | nindent 4 }}
+    component: keycloak

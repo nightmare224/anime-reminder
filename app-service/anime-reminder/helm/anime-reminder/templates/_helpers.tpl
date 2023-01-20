@@ -11,9 +11,9 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 If release name contains chart name it will be used as a full name.
 */}}
 {{- define "anime-reminder.fullname" -}}
-    {{- if .Values.fullnameOverride }}
-    {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-    {{- else }}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
 {{- $name := default .Chart.Name .Values.nameOverride }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
@@ -51,11 +51,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "anime-reminder.ui" -}}
-  {{- printf "%s-ui" (include "anime-reminder.fullname" .) -}}
+  {{- printf "ar-ui" -}}
 {{- end -}}
 
 {{- define "anime-reminder.api" -}}
-  {{- printf "%s-api" (include "anime-reminder.fullname" .) -}}
+  {{- printf "ar-api" -}}
+{{- end -}}
+
+{{- define "anime-reminder.keycloak" -}}
+  {{- printf "ar-keycloak" -}}
 {{- end -}}
 
 {{/*
@@ -74,5 +78,14 @@ Create the name of the service account to use
 {{- default (include "anime-reminder.api" .) .Values.api.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.api.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+
+{{- define "anime-reminder.keycloak.serviceAccountName" -}}
+{{- if .Values.keycloak.serviceAccount.create }}
+{{- default (include "anime-reminder.keycloak" .) .Values.keycloak.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.keycloak.serviceAccount.name }}
 {{- end }}
 {{- end }}

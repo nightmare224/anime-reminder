@@ -1,0 +1,20 @@
+{{- $highAvailability := gt (int .Values.keycloak.replicas) 1 -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "anime-reminder.keycloak" . }}-headless
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: keycloak
+    app.kubernetes.io/component: headless
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: {{ .Values.keycloak.service.httpPort }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "anime-reminder.selectorLabels" . | nindent 4 }}
+    component: keycloak

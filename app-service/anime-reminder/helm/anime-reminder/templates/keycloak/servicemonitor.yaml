@@ -1,0 +1,40 @@
+{{- range $key, $serviceMonitor := dict "wildfly" .Values.keycloak.serviceMonitor "extra" .Values.keycloak.extraServiceMonitor }}
+{{- with $serviceMonitor }}
+{{- if .enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "anime-reminder.keycloak" $ }}-{{ $key }}
+  {{- with .namespace }}
+  namespace: {{ . }}
+  {{- end }}
+  {{- with .annotations }}
+  annotations:
+    {{- range $key, $value := . }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  labels:
+    {{- include "anime-reminder.labels" $ | nindent 4 }}
+    component: keycloak
+    {{- range $key, $value := .labels }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+spec:
+  {{- with .namespaceSelector }}
+  namespaceSelector:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "anime-reminder.selectorLabels" $ | nindent 6 }}
+      component: keycloak
+  endpoints:
+    - port: {{ .port }}
+      path: {{ .path }}
+      interval: {{ .interval }}
+      scrapeTimeout: {{ .scrapeTimeout }}
+{{- end }}
+{{- end }}
+{{- end }}

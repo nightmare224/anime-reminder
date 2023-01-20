@@ -1,0 +1,25 @@
+{{- with .Values.keycloak.prometheusRule -}}
+{{- if .enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "anime-reminder.keycloak" $ }}
+  {{- with .annotations }}
+  annotations:
+  {{- range $key, $value := . }}
+  {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  labels:
+    {{- include "anime-reminder.labels" $ | nindent 4 }}
+    component: keycloak
+    {{- range $key, $value := .labels }}
+    {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 4 }}
+    {{- end }}
+spec:
+  groups:
+    - name: {{ include "anime-reminder.keycloak" $ }}
+      rules:
+        {{- toYaml .rules | nindent 8 }}
+{{- end }}
+{{- end -}}
