@@ -52,6 +52,11 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.ui.resources | nindent 12 }}
+          volumeMounts:
+          {{- if .Values.ui.devMode.enabled }}
+            - mountPath: {{ .Values.ui.devMode.codePathOfPod }}
+              name: {{ include "anime-reminder.ui" . }}-dev
+          {{- end }}
       {{- with .Values.ui.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -68,3 +73,10 @@ spec:
         - ip: {{ .Values.loadBalancer.ip }}
           hostnames:
           - sc23.group40.io
+      volumes:
+        {{- if .Values.ui.devMode.enabled }}
+        - name: {{ include "anime-reminder.ui" . }}-dev
+          hostPath:
+            path: {{ .Values.ui.devMode.codePathOfLocal }}
+            type: Directory
+        {{- end }}

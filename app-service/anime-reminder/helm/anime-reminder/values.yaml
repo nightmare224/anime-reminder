@@ -46,10 +46,12 @@ ui:
   affinity: {}
 
   healthCheck:
-    enable: false
+    enabled: false
 
-
-
+  devMode:
+    enabled: true
+    codePathOfLocal: /home/thl/Documents/softwareContainerization/final-project/app-service/anime-reminder/app/ui/src
+    codePathOfPod: /opt/src
 
 
 api:
@@ -92,13 +94,18 @@ api:
   affinity: {}
 
   healthCheck:
-    enable: false
+    enabled: false
 
   podAnnotations: {}
 
   podSecurityContext: {}
 
   securityContext: {}
+
+  devMode:
+    enabled: true
+    codePathOfLocal: /home/thl/Documents/softwareContainerization/final-project/app-service/anime-reminder/app/api/src
+    codePathOfPod: /opt/src
 
 keycloak:
   replicaCount: 1

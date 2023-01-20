@@ -64,6 +64,7 @@
 - name: Deploy app service
   hosts: master
   roles:
-    - { role: deploy-service, service_name: postgresql, service_path: ../../app-service/postgresql }
+    # - { role: deploy-service, service_name: postgresql, service_path: ../../app-service/postgresql }
+    # - { role: deploy-service, service_name: keycloak, service_path: ../../app-service/keycloak }
     - { role: deploy-service, service_name: anime-reminder, service_path: ../../app-service/anime-reminder }
   tags: app-service
