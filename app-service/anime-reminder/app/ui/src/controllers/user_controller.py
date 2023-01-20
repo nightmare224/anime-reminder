@@ -5,7 +5,7 @@ from keycloakOIDC import KeycloakOIDCFrontendFlask
 user_controller = Blueprint('user_controller', __name__)
 koidc = KeycloakOIDCFrontendFlask()
 
-@user_controller.route('/animereminder/ui/user', methods=['GET'])
+@user_controller.route('/animereminder/ui/home', methods=['GET'])
 # @koidc.require_permission("Default Resource")
 @koidc.require_login
 def get_user():
