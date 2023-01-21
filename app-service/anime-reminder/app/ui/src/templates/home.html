@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename = 'css/home.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename = 'js/jquery-ui/jquery-ui.css') }}" />
-<link rel="stylesheet" href="{{ url_for('static', filename = 'js/jquery-ui/jquery-ui.structure.css') }}" />
-<link rel="stylesheet" href="{{ url_for('static', filename = 'js/jquery-ui/jquery-ui.theme.css') }}" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 {% endblock %}
 
 
@@ -49,3 +45,8 @@
     <button id="addanimebtn" rel="modal:close"><a href="#" rel="modal:close" style="text-decoration: none">Submit</a></button>
 </div>
 {% endblock %}
+
+{% block script %}
+<script type="text/javascript" src = "{{ url_for('static', filename = 'js/home.js') }}" ></script>
+{% endblock %}
+

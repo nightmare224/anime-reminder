@@ -1,65 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Anime Reminder</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/anime.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'js/jquery-ui/jquery-ui.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'js/jquery-ui/jquery-ui.structure.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'js/jquery-ui/jquery-ui.theme.css') }}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
-</head>
-<body>
-    <h1>
-        <span class="blue"></span>Welcome to Anime Reminder<span class="blue"></span>
-        <!-- <span class="yellow">Responsive</pan> -->
-    </h1>
-        
-    <table id="artb" class="container">
-        <thead>
-        <tr>
-            <th><h1>Seasons</h1></th>
-            <th><h1>Episodes</h1></th>
-            <th><h1></h1></th>
-        </tr>
-        </thead>
-        <tbody id="artbbody">
-        </tbody>
-    </table>
-    <table class="container">
-        <thead>
-        <tr>
-        </tr>
-        </thead>
-        <tbody>
-        <tr id="addartr">
-            <td>
-                <h1><a href="#addar" rel="modal:open" style="text-decoration: none; color: #4DC3FA">+</a></h1>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div id="addar" class="modal">
-        <h2>Reminder</h2>
-        <div>
-            <label for="sspinner">Season:</label>
-            <input id="sspinner" name="value">
-        </div>
-        <div>
-            <label for="espinner">Episode:</label>
-            <input id="espinner" name="value">
-        </div>
-        <button id="addarbtn" rel="modal:close"><a href="#" rel="modal:close" style="text-decoration: none">Submit</a></button>
-    </div>
-    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/jquery.js') }}"></script>
-    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/jquery-ui/jquery-ui.js') }}"></script>
-    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/base.js') }}"></script>
-    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/anime.js') }}" ></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
-    <script>
-        keycloak.access_token = "{{ ACCESS_TOKEN }}";
-        keycloak.user_id = "{{ USER_ID }}";
-    </script>
-</body>
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename = 'css/anime.css') }}">
+{% endblock %}
 
-</html>
+{% block content %}
+<h1>
+    <span class="blue"></span>Welcome to Anime Reminder<span class="blue"></span>
+    <!-- <span class="yellow">Responsive</pan> -->
+</h1>
+    
+<table id="artb" class="container">
+    <thead>
+    <tr>
+        <th><h1>Seasons</h1></th>
+        <th><h1>Episodes</h1></th>
+        <th><h1></h1></th>
+    </tr>
+    </thead>
+    <tbody id="artbbody">
+    </tbody>
+</table>
+<table class="container">
+    <thead>
+    <tr>
+    </tr>
+    </thead>
+    <tbody>
+    <tr id="addartr">
+        <td>
+            <h1><a href="#addar" rel="modal:open" style="text-decoration: none; color: #4DC3FA">+</a></h1>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div id="addar" class="modal">
+    <h2>Reminder</h2>
+    <div>
+        <label for="sspinner">Season:</label>
+        <input id="sspinner" name="value">
+    </div>
+    <div>
+        <label for="espinner">Episode:</label>
+        <input id="espinner" name="value">
+    </div>
+    <button id="addarbtn" rel="modal:close"><a href="#" rel="modal:close" style="text-decoration: none">Submit</a></button>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src = "{{ url_for('static', filename = 'js/anime.js') }}" ></script>
+{% endblock %}
