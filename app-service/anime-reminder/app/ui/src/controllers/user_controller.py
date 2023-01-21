@@ -25,6 +25,13 @@ def home():
 def anime():
     return render_template('anime.html')
 
+
+@user_controller.route('/animereminder/ui/user', methods=['GET'])
+# @koidc.require_permission("Default Resource")
+@koidc.require_login
+def user():
+    return render_template('user.html')
+
 @user_controller.route('/animereminder/ui/logout')
 @koidc.require_login
 def logout():
