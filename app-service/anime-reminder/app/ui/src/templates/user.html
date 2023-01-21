@@ -1,43 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Static - Page</title>
-    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-    <script type = "text/javascript" src = "{{ url_for('static', filename = 'js/user.js') }}" ></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/animetb.css') }}">
-</head>
-<body>
-    <h1>Template - Page</h1>
-    <!-- <button id="btnHello" onClick="sayHello()">Say Hello</button> -->
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename = 'css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>
+    <span class="blue"></span>Welcome to Anime Reminder<span class="blue"></span>
+    <!-- <span class="yellow">Responsive</pan> -->
+</h1>
     
-    <p></p>
-    <table id="allAnimeTable" class="styled-table">
-        <thead>
-            <tr>
-                <th>Anime Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>John Doe</td>
-            </tr>
-        </tbody>
-    </table>
-    <!-- <script>
-        var allAnime = [
-            {'name': 'Spy Family'},
-            {'name': 'Chainsaw Man'}
-        ]
-        allAnimeTable(allAnime)
-        function allAnimeTable(data){
-            var table = document.getElementById('allAnimeTable')
-            for (var i = 0; i < data.length; i++){
-                var row = `<tr><td>${data[i].name}</td></tr>`
-                table.innerHTML += row
-            }
-        }
-    </script> -->
-</body>
-</html>
+<table id="artb" class="container">
+    <thead>
+    <tr>
+        <th><h1>Username</h1></th>
+        <!-- <th><h1>Episodes</h1></th> -->
+        <th><h1></h1></th>
+    </tr>
+    </thead>
+    <tbody id="usertbbody">
+    </tbody>
+</table>
+<!-- <table class="container">
+    <thead>
+    <tr>
+    </tr>
+    </thead>
+    <tbody>
+    <tr id="addartr">
+        <td>
+            <h1><a href="#edituser" rel="modal:open" style="text-decoration: none; color: #4DC3FA">+</a></h1>
+        </td>
+    </tr>
+    </tbody>
+</table> -->
+<div id="edituser" class="modal">
+    <h2>Reminder</h2>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src = "{{ url_for('static', filename = 'js/user.js') }}" ></script>
+{% endblock %}

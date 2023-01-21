@@ -18,25 +18,6 @@ class KeycloakOIDCFrontendFlask(KeycloakOIDC):
       self.credentials_store = {}
 
   @property
-  def company_id(self):
-    if "company_id" in request.view_args:
-      return request.view_args["company_id"]
-    # This part only make sense when user only join one company
-    access_token_decode = self.verify_and_decode_token(self.access_token)
-    if access_token_decode:
-      groups = access_token_decode['groups']
-      for group in groups:
-        match_result = re.match(r"^/([^/]+)$", group)
-        if match_result and match_result.group(1) not in self.roleSet:
-          return match_result.group(1)
-
-    return None
-
-  @property
-  def project_id(self):
-    return request.view_args["project_id"] if "project_id" in request.view_args else None
-
-  @property
   def access_token(self):
     uid = self.get_uid_cookie()
     if uid not in self.credentials_store:
@@ -95,17 +76,6 @@ class KeycloakOIDCFrontendFlask(KeycloakOIDC):
     app.before_request(self._before_request)
     app.after_request(self._after_request)
 
-  # def register_callback_route(self, route, app):
-  #   app.route(route)(self._oidc_callback)
-
-  # def retrive_session_value(self, key):
-  #   return session.get(key)
-
-  # def retrive_url_param(self, key):
-  # if key == 'state':
-  #   return json.loads(urlsafe_b64decode(request.args['state'].encode('utf-8')))
-  # else:
-  #   return request.args[key]
 
   def _after_request(self, response):
     if g.uid:
