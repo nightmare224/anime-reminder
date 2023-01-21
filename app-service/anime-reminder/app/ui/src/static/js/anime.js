@@ -55,7 +55,7 @@ $("document").ready(function(){
         }
         $.ajax({
             type: "DELETE",
-            url: "/animereminder/api/v1/user/" + keycloak.user_id + "/anime/" + anime_id,
+            url: "/animereminder/api/v1/user/" + keycloak.user_id + "/anime/" + anime_id + "/reminder",
             headers: {"Authorization": "Bearer " + keycloak.access_token },
             data: JSON.stringify(payload),
             dataType: "json",
@@ -95,7 +95,7 @@ $("document").ready(function(){
         // }
         $.ajax({
             type: "PUT",
-            url: "/animereminder/api/v1/user/" + keycloak.user_id + "/anime/" + anime_id,
+            url: "/animereminder/api/v1/user/" + keycloak.user_id + "/anime/" + anime_id + "/reminder",
             headers: {"Authorization": "Bearer " + keycloak.access_token },
             data: JSON.stringify(payload),
             dataType: "json",

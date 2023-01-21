@@ -99,10 +99,26 @@ def create_user_anime(user_id):
     resp = Create()
     return jsonify(resp.payload), resp.status_code
 
-@user_controller.route('/animereminder/api/v1/user/<user_id>/anime/<anime_id>', methods=['PUT'])
+
+@user_controller.route('/animereminder/api/v1/user/<user_id>/anime/<anime_id>', methods=['DELETE'])
 @koidc.require_login
 # @koidc.require_permission("Default Resource")
-def edit_user_anime(user_id, anime_id):
+def delete_user_anime(user_id, anime_id):
+
+    anime_old = _get_user_anime(user_id, anime_id)
+    if not anime_old:
+        raise OtherNotFound("The anime not found for the user")
+
+    with DBManager().session_ctx() as session:
+        session.query(User_Anime_DB).filter_by(user_id = user_id, anime_id = anime_id).delete()
+
+    resp = Delete()
+    return jsonify(resp.payload), resp.status_code
+
+@user_controller.route('/animereminder/api/v1/user/<user_id>/anime/<anime_id>/reminder', methods=['PUT'])
+@koidc.require_login
+# @koidc.require_permission("Default Resource")
+def edit_user_anime_reminder(user_id, anime_id):
 
     request_data = request.get_json()
  
@@ -149,10 +165,10 @@ def edit_user_anime(user_id, anime_id):
     return jsonify(resp.payload), resp.status_code
 
 
-@user_controller.route('/animereminder/api/v1/user/<user_id>/anime/<anime_id>', methods=['DELETE'])
+@user_controller.route('/animereminder/api/v1/user/<user_id>/anime/<anime_id>/reminder', methods=['DELETE'])
 @koidc.require_login
 # @koidc.require_permission("Default Resource")
-def delete_user_anime(user_id, anime_id):
+def delete_user_anime_reminder(user_id, anime_id):
 
     request_data = request.get_json()
  
@@ -165,9 +181,6 @@ def delete_user_anime(user_id, anime_id):
     if not anime_old:
         raise OtherNotFound("The anime not found for the user")
 
-    # The season to episode mapping before update
-    season2episode = dict([(r.season, r.episode) for r in anime_old[0].anime_reminder])
- 
     with DBManager().session_ctx() as session:
         index, = session.query(User_Anime_DB.index).filter_by(user_id = user_id, anime_id = anime_id).one() 
         for reminder in anime.anime_reminder:

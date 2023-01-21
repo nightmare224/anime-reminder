@@ -8,8 +8,8 @@ $("document").ready(function(){
         for (var i = 0; i < rsp.length; i++){
             var row = `
             <tr id="${rsp[i].anime_id}tr">
-                <td><a href="anime?anime_id=${rsp[i].anime_id}" style="text-decoration: none"><h2>${rsp[i].anime_name}</h2></a></td>
-                <td id="deltd"><h3 id="delh1">x<h3></td>
+                <td class="animetd" id="${rsp[i].anime_id}"><a href="anime?anime_id=${rsp[i].anime_id}" style="text-decoration: none"><h2>${rsp[i].anime_name}</h2></a></td>
+                <td class="deltd" id="deltd"><h3 id="delh1">x<h3></td>
             </tr>`;
             $("#animetb1").append(row);
         }
@@ -40,6 +40,26 @@ $("document").ready(function(){
         // clean the input box
         $('input[id=addanimeinput]').val(' ');
     });
+    $("#animetb1").on('click', '.deltd', function(){
+        let anime_id = $(this).siblings(".animetd").attr("id").toString();
+        // let episode = $(this).siblings(".episode").text();
+        // let payload = {
+        //     "anime_reminder": [
+        //         {
+        //             "season": season,
+        //             "episode": episode
+        //         }
+        //     ]
+        // }
+        $.ajax({
+            type: "DELETE",
+            url: "/animereminder/api/v1/user/" + keycloak.user_id + "/anime/" + anime_id,
+            headers: {"Authorization": "Bearer " + keycloak.access_token },
+            contentType: "application/json"
+        }).done(function (rsp) {
+            location.reload();
+        });
+    })
     // $("tr").click(function(){
     //     alert("Clicked");
     //     // window.location.href = "anime.html";
