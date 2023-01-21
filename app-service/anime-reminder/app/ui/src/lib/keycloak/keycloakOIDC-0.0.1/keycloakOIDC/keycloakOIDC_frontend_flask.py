@@ -64,9 +64,9 @@ class KeycloakOIDCFrontendFlask(KeycloakOIDC):
     if uid not in self.credentials_store:
       return None
     credentials = self.credentials_store[uid]
-    # refresh token expires
-    if time.time() >= credentials.token["refresh_expires_at"]:
-      return None
+    # # refresh token expires
+    # if time.time() >= credentials.token["refresh_expires_at"]:
+    #   return None
     
     return credentials.token["refresh_token"]
 
@@ -180,7 +180,7 @@ class KeycloakOIDCFrontendFlask(KeycloakOIDC):
     # logout session
     refresh_token = self.refresh_token
     if refresh_token is not None:
-        self.keycloak_openid.logout(refresh_token)
+      self.keycloak_openid.logout(refresh_token)
     # clean credential store
     uid = self.get_uid_cookie()
     if uid is not None:
