@@ -13,9 +13,10 @@ from lib.api.responses import Create, Update, Read, Delete
 user_controller = Blueprint('user_controller', __name__)
 koidc = KeycloakOIDCBackendFlask()
 
+
 @user_controller.route('/animereminder/api/v1/user', methods=['GET'])
-@koidc.require_login
-# @koidc.require_permission("Default Resource")
+# @koidc.require_login
+@koidc.require_permission("get_user")
 def get_user():
 
     users = []

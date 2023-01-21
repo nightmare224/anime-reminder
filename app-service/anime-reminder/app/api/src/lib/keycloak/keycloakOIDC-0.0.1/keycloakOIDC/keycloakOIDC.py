@@ -1,5 +1,3 @@
-from curses import setupterm
-from sys import settrace
 import jwt
 import httplib2
 import json
@@ -42,9 +40,7 @@ class KeycloakOIDC(ABC):
       client_secret_key = self.client_secrets['client_secret'],
       verify = True)
     self.client_secrets["client_id"] = self.keycloak_admin.get_client_id(self.client_secrets['client_name'])
-    self.roleSet = set(["Super Admin", "Company Admin", "Project Admin", "Super Developer", "Developer", "Label Manager"])
-    self.companyRoleSet = set(["Company Admin"])
-    self.projectRoleSet = set(["Project Admin", "Super Developer", "Developer", "Label Manager"])
+    self.roleSet = set(["Admin", "User"])
     self.initialized = True
 
   @property
@@ -62,39 +58,15 @@ class KeycloakOIDC(ABC):
   def access_token(self):
     return NotImplemented
 
-  @property
-  @abstractmethod
-  def company_id(self) -> str:
-    return NotImplemented
   
   @property
-  @abstractmethod
-  def project_id(self) -> str:
-    return NotImplemented
-  
-  @property
-  def is_sa(self) -> bool:
-    return "Super Admin" in self.retrive_user_roles_from_token(self.access_token)
+  def is_admin(self) -> bool:
+    return "Admin" in self.retrive_user_roles_from_token(self.access_token)
 
   @property
-  def is_ca(self) -> bool:
-    return "Company Admin" in self.retrive_user_roles_from_token(self.access_token)
+  def is_user(self) -> bool:
+    return "User" in self.retrive_user_roles_from_token(self.access_token)
 
-  @property
-  def is_pa(self) -> bool:
-    return "Project Admin" in self.retrive_user_roles_from_token(self.access_token)
-
-  @property
-  def is_sd(self) -> bool:
-    return "Super Developer" in self.retrive_user_roles_from_token(self.access_token)
-
-  @property
-  def is_dev(self) -> bool:
-    return "Developer" in self.retrive_user_roles_from_token(self.access_token)
-
-  @property
-  def is_la(self) -> bool:
-    return "Label Manager" in self.retrive_user_roles_from_token(self.access_token)
 
   @abstractmethod
   def require_login(self):
@@ -198,32 +170,8 @@ class KeycloakOIDC(ABC):
     return json.loads(content)["status"] == "PERMIT"
     
   def retrive_user_roles_from_token(self, token):
-    try:
-      # Check whether the group in keycloak exist or not
-      company_id = self.keycloak_admin.get_group(self.company_id)['name'] if self.company_id else ""
-      project_id = self.keycloak_admin.get_group(self.project_id)['name'] if self.project_id else ""
-    except:
-      return self.raise_error(self.notfound_error("Company id or project id not found"))
-      
+
     token_decode = self.verify_and_decode_token(token)
-    user_groups = token_decode["groups"]
-    roles = []
-    for group in user_groups:
-      # /Company1/project-1/Project Admin
-      if project_id != "":
-        match_result = re.match(rf"^/{company_id}/{project_id}/([^/]+)$", group)
-      # get whatever role in the group
-      else:
-        match_result = re.match(rf"^/{company_id}/[^/]+/([^/]+)$", group)
-      if match_result is not None:
-          roles.append(match_result.group(1))
-      # /Company1/Company Admin
-      match_result = re.match(rf"^/{company_id}/([^/]+)$", group)
-      if match_result is not None:
-          roles.append(match_result.group(1))
-      match_result = re.match(r"^/([^/]+)$", group)
-      # /Super Admin
-      if match_result is not None:
-          roles.append(match_result.group(1))
+    roles = token_decode["resource_access"][self.client_secrets['client_name']]["roles"]
             
     return set(roles) & self.roleSet
