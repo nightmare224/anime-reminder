@@ -15,7 +15,7 @@ $("document").ready(function(){
             <tr class="artbtr">
                 <td class="season"><h2><a href="#addar" rel="modal:open" style="text-decoration: none">${reminder[i].season}</a></h2></td>
                 <td class="episode"><h2><a href="#addar" rel="modal:open" style="text-decoration: none">${reminder[i].episode}</a></h2></td>
-                <td id="deltd"><h3 id="delh1">x<h3></td>
+                <td class="deltd" id="deltd"><h3 class="delh1">x<h3></td>
             </tr>`;
             $("#artbbody").append(row);
         }
@@ -42,9 +42,31 @@ $("document").ready(function(){
             sspinner.spinner("value", $(this).siblings(".season").text());
         }
     })
+    $("#artbbody").on('click', '.deltd', function(){
+        let season = $(this).siblings(".season").text();
+        let episode = $(this).siblings(".episode").text();
+        let payload = {
+            "anime_reminder": [
+                {
+                    "season": season,
+                    "episode": episode
+                }
+            ]
+        }
+        $.ajax({
+            type: "DELETE",
+            url: "/animereminder/api/v1/user/" + keycloak.user_id + "/anime/" + anime_id,
+            headers: {"Authorization": "Bearer " + keycloak.access_token },
+            data: JSON.stringify(payload),
+            dataType: "json",
+            contentType: "application/json"
+        }).done(function (rsp) {
+            location.reload();
+        });
+    })
     // // var animelist = ["Spy x Famile", "Chainsaw Man"]
     $("#addarbtn").click(function(){
-        var payload = {
+        let payload = {
             "anime_reminder": [
                 {
                     "season": sspinner.spinner("value").toString(),

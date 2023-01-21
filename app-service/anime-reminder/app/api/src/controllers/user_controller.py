@@ -148,6 +148,34 @@ def edit_user_anime(user_id, anime_id):
     resp = Update()
     return jsonify(resp.payload), resp.status_code
 
+
+@user_controller.route('/animereminder/api/v1/user/<user_id>/anime/<anime_id>', methods=['DELETE'])
+@koidc.require_login
+# @koidc.require_permission("Default Resource")
+def delete_user_anime(user_id, anime_id):
+
+    request_data = request.get_json()
+ 
+    try:
+        anime = Anime_Reminder(**request_data)
+    except TypeError as e:
+        raise OtherBadRequest('Invalid request data: %s'%e)
+
+    anime_old = _get_user_anime(user_id, anime_id)
+    if not anime_old:
+        raise OtherNotFound("The anime not found for the user")
+
+    # The season to episode mapping before update
+    season2episode = dict([(r.season, r.episode) for r in anime_old[0].anime_reminder])
+ 
+    with DBManager().session_ctx() as session:
+        index, = session.query(User_Anime_DB.index).filter_by(user_id = user_id, anime_id = anime_id).one() 
+        for reminder in anime.anime_reminder:
+            session.query(User_Anime_Reminder_DB).filter_by(index = index, season = reminder.season).delete()
+
+    resp = Delete()
+    return jsonify(resp.payload), resp.status_code
+
 def _create_user(user_id):
     user_db = User_DB(
         user_id = user_id

@@ -135,7 +135,7 @@ font-weight: bold;
         transition-property: all;
     transition-timing-function: line;
 }
-#delh1{
+.delh1{
     font-weight: bold;
     font-size: 1em;
     text-align: center;
