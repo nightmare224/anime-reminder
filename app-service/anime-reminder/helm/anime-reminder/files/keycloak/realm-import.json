@@ -2,6 +2,7 @@
     "id": "anime-reminder",
     "realm": "anime-reminder",
     "enabled": true,
+    "accessTokenLifespan": 10800,
     "groups": [],
     "users": [
       {
@@ -29,6 +30,7 @@
         "enabled": true,
         "alwaysDisplayInConsole": false,
         "clientAuthenticatorType": "client-secret",
+        "secret": "y6FPSwWYxnVkqh9kken7NoA1aHpSDQHc",
         "redirectUris": [
           "http://*",
           "https://*"
@@ -41,7 +43,8 @@
         "implicitFlowEnabled": false,
         "directAccessGrantsEnabled": true,
         "serviceAccountsEnabled": false,
-        "publicClient": true,
+        "authorizationServicesEnabled": true,
+        "publicClient": false,
         "frontchannelLogout": false,
         "protocol": "openid-connect",
         "attributes": {
