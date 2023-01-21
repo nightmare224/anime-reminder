@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Anime Reminder </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename = 'css/base.css') }}">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <div class="area">
+        {% block content %}{% endblock %}
+    </div>
+    <nav class="main-menu">
+        <ul>
+            <li>
+                <a href="home">
+                    <i class="fa fa-home fa-2x"></i>
+                    <span class="nav-text">
+                        Home
+                    </span>
+                </a>
+
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class="fa fa-film fa-2x"></i>
+                    <span class="nav-text">
+                        Anime Management
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fa fa-cogs fa-2x"></i>
+                    <span class="nav-text">
+                        User Management
+                    </span>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="logout">
+            <li>
+                <a href="logout">
+                    <i class="fa fa-power-off fa-2x"></i>
+                    <span class="nav-text">
+                        Logout
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/jquery.js') }}"></script>
+    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/jquery-ui/jquery-ui.js') }}"></script>
+    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/base.js') }}"></script>
+    <script type="text/javascript" src = "{{ url_for('static', filename = 'js/home.js') }}" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <script>
+        keycloak.access_token = "{{ ACCESS_TOKEN }}";
+        keycloak.user_id = "{{ USER_ID }}";
+    </script>
+</body>
+
+</html>

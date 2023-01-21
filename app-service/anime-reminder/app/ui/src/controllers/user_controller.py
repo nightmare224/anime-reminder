@@ -1,14 +1,21 @@
 
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, redirect
 from keycloakOIDC import KeycloakOIDCFrontendFlask
 
 user_controller = Blueprint('user_controller', __name__)
 koidc = KeycloakOIDCFrontendFlask()
 
+
+@user_controller.route('/animereminder/ui/base', methods=['GET'])
+@koidc.require_login
+def base():
+
+    return render_template('user.html')
+
 @user_controller.route('/animereminder/ui/home', methods=['GET'])
 # @koidc.require_permission("Default Resource")
 @koidc.require_login
-def get_user():
+def home():
 
     return render_template('home.html')
 
@@ -16,9 +23,15 @@ def get_user():
 # @koidc.require_permission("Default Resource")
 @koidc.require_login
 def anime():
-
     return render_template('anime.html')
 
+@user_controller.route('/animereminder/ui/logout')
+@koidc.require_login
+def logout():
+
+    koidc.logout()
+
+    return redirect("/animereminder/ui/home")
 
 # @user_controller.route('/animereminder/api/v1/users', methods=['GET'])
 # # @koidc.require_permission("Default Resource")
