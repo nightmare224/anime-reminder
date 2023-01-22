@@ -40,6 +40,10 @@ spec:
             - name: http
               containerPort: 80
               protocol: TCP
+          envFrom:
+            {{- with .Values.api.extraEnvFrom }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
           {{- if .Values.api.healthCheck.enabled }}
           livenessProbe:
             httpGet:

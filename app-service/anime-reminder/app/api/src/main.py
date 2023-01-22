@@ -1,5 +1,6 @@
 
 # from lib.config_parser_base import Config as RPSConfig
+from os import getenv
 from configparser import ConfigParser
 from urllib.parse import quote as urlquote
 from flask import Flask
@@ -20,8 +21,8 @@ DBManager().db_uri(
     "default",
     "{}://{}:{}@{}:{}/{}".format(
         config_parser["DATABASE"]["Connector"],
-        config_parser["DATABASE"]["User"],
-        urlquote(config_parser["DATABASE"]["Password"]),
+        getenv("DB_USER"),
+        getenv("DB_PASSWORD"),
         config_parser["DATABASE"]["Host"],
         config_parser["DATABASE"]["Port"],
         config_parser["DATABASE"]["DatabaseName"],

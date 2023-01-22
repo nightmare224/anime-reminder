@@ -104,6 +104,10 @@ api:
 
   securityContext: {}
 
+  extraEnvFrom: |
+    - secretRef: 
+        name: anime-reminder-common
+
   devMode:
     enabled: true
     codePathOfLocal: /home/thl/Documents/softwareContainerization/final-project/app-service/anime-reminder/app/api/src
@@ -146,10 +150,6 @@ keycloak:
   hostAliases: []
 
   extraEnv: |
-    - name: KEYCLOAK_USER
-      value: admin
-    - name: KEYCLOAK_PASSWORD
-      value: admin
     - name: DB_VENDOR
       value: postgres
     - name: DB_ADDR
@@ -158,16 +158,14 @@ keycloak:
       value: "5432"
     - name: DB_DATABASE
       value: keycloak
-    - name: DB_USER
-      value: postgres
-    - name: DB_PASSWORD
-      value: efreet224
     - name: PROXY_ADDRESS_FORWARDING
       value: "true"
     - name: KEYCLOAK_IMPORT
       value: /realm/realm-import.json
 
-  extraEnvFrom: ""
+  extraEnvFrom: |
+    - secretRef: 
+        name: anime-reminder-common
   extraPorts: []
 
   livenessProbe: |
