@@ -49,7 +49,7 @@ ui:
     enabled: false
 
   devMode:
-    enabled: true
+    enabled: false
     codePathOfLocal: /home/thl/Documents/softwareContainerization/final-project/app-service/anime-reminder/app/ui/src
     codePathOfPod: /opt/src
 
@@ -109,7 +109,7 @@ api:
         name: anime-reminder-common
 
   devMode:
-    enabled: true
+    enabled: false
     codePathOfLocal: /home/thl/Documents/softwareContainerization/final-project/app-service/anime-reminder/app/api/src
     codePathOfPod: /opt/src
 
@@ -131,8 +131,8 @@ keycloak:
   args: []
 
   admin:
-    username: admin
-    password: admin
+    username: ""
+    password: ""
 
   serviceAccount:
     # Specifies whether a ServiceAccount should be created
@@ -433,7 +433,7 @@ keycloak:
 
 
 postgresql:
-  replicaCount: 1
+  replicaCount: 2
 
   image:
     repository: postgres
@@ -467,7 +467,7 @@ postgresql:
     subPath: ""
     accessModes:  [ReadWriteOnce]
     ## Storage Capacity for persistent volume
-    size: 10Gi
+    size: 3Gi
     annotations: {}
 
   resources: {}
@@ -480,8 +480,8 @@ postgresql:
     runAsUser: 1001
 
   postgresql:
-    username: postgres
-    password: postgres
+    username: ""
+    password: ""
     database: postgres
     port: 5432
     # initdbArgs 

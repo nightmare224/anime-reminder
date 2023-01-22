@@ -22,7 +22,7 @@ DBManager().db_uri(
     "{}://{}:{}@{}:{}/{}".format(
         config_parser["DATABASE"]["Connector"],
         getenv("DB_USER"),
-        getenv("DB_PASSWORD"),
+        urlquote(getenv("DB_PASSWORD")),
         config_parser["DATABASE"]["Host"],
         config_parser["DATABASE"]["Port"],
         config_parser["DATABASE"]["DatabaseName"],
