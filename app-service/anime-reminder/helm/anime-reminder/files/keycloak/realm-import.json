@@ -12,6 +12,28 @@
     "resetPasswordAllowed": false,
     "editUsernameAllowed": true,
     "groups": [],
+    "roles": {
+      "client": {
+        "anime-reminder": [
+          {
+            "id": "887f16b6-969f-4be7-93ba-7abaf4560300",
+            "name": "Admin",
+            "composite": false,
+            "clientRole": true,
+            "containerId": "630d5e5f-453f-48ac-bdd1-df27b09c9dbf",
+            "attributes": {}
+          },
+          {
+            "id": "89b4054e-245d-48f7-b90e-bb9a87b74a03",
+            "name": "User",
+            "composite": false,
+            "clientRole": true,
+            "containerId": "630d5e5f-453f-48ac-bdd1-df27b09c9dbf",
+            "attributes": {}
+          }
+        ]
+      }
+    },
     "users": [
       {
         "username": "admin",

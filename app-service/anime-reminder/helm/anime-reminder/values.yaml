@@ -126,6 +126,9 @@ keycloak:
   command: []
   args: []
 
+  admin:
+    username: admin
+    password: admin
 
   serviceAccount:
     # Specifies whether a ServiceAccount should be created
@@ -146,10 +149,6 @@ keycloak:
     - name: KEYCLOAK_USER
       value: admin
     - name: KEYCLOAK_PASSWORD
-      value: admin
-    - name: KEYCLOAK_ADMIN
-      value: admin
-    - name: KEYCLOAK_ADMIN_PASSWORD
       value: admin
     - name: DB_VENDOR
       value: postgres

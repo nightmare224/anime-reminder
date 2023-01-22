@@ -25,7 +25,7 @@ main() {
     --wait \
     --timeout=600s \
     --set postgresql.persistence.size=3Gi \
-    --set postgresql.postgresql.password=${POSTGRESQL_ADMIN_PASSWORD} \
+    --set postgresql.postgresql.password=${POSTGRESQL_PASSWORD} \
     --set loadBalancer.ip=${LB_EXTERNEL_IP}
 }
 
