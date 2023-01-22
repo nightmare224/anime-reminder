@@ -7,7 +7,7 @@ fullnameOverride: ""
 nameOverride: ""
 
 ui:
-  replicaCount: 1
+  replicaCount: 2
 
   image:
     repository: nightmare224/anime-reminder-ui
@@ -55,7 +55,7 @@ ui:
 
 
 api:
-  replicaCount: 1
+  replicaCount: 2
 
   image:
     repository: nightmare224/anime-reminder-api
@@ -77,6 +77,8 @@ api:
   service:
     type: ClusterIP
     port: 80
+    # default is None
+    sessionAffinity: ClientIP
 
   resources: {}
 
@@ -558,6 +560,8 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-buffer-size: 128k
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: sc23.group40.io
