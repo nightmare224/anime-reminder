@@ -64,48 +64,28 @@ $("document").ready(function(){
             location.reload();
         });
     })
-    // // var animelist = ["Spy x Famile", "Chainsaw Man"]
     $("#addarbtn").click(function(){
-        let payload = {
-            "anime_reminder": [
-                {
-                    "season": sspinner.spinner("value").toString(),
-                    "episode": espinner.spinner("value").toString()
-                }
-            ]
-        }
-        // var reminders = [];
-        // var season = sspinner.spinner("value").toString();
-        // var episode = espinner.spinner("value").toString();
-        // reminders.push({
-        //     "season": season,
-        //     "episode": episode
-        // })
-        // $("#artb .artbtr").each(function(){
-        //     // if the season already exist
-        //     if( season != $(this.cells[0]).text() ) {
-        //         reminders.push({
-        //             "season": $(this.cells[0]).text(),
-        //             "episode": $(this.cells[1]).text()
-        //         })
-        //     }
-        // });
-        // var payload = {
-        //     "anime_reminder": reminders
-        // }
-        $.ajax({
-            type: "PUT",
-            url: "/animereminder/api/v1/user/" + keycloak.user_id + "/anime/" + anime_id + "/reminder",
-            headers: {"Authorization": "Bearer " + keycloak.access_token },
-            data: JSON.stringify(payload),
-            dataType: "json",
-            contentType: "application/json"
-        }).done(function (rsp) {
-            location.reload();
+        $(this).addClass("is_active");
+        $(this).animate({opacity: 1}, 500, function(){
+            let payload = {
+                "anime_reminder": [
+                    {
+                        "season": sspinner.spinner("value").toString(),
+                        "episode": espinner.spinner("value").toString()
+                    }
+                ]
+            }
+            $.ajax({
+                type: "PUT",
+                url: "/animereminder/api/v1/user/" + keycloak.user_id + "/anime/" + anime_id + "/reminder",
+                headers: {"Authorization": "Bearer " + keycloak.access_token },
+                data: JSON.stringify(payload),
+                dataType: "json",
+                contentType: "application/json"
+            }).done(function (rsp) {
+                location.reload();
+            });
         });
+
     });
-    // // $("tr").click(function(){
-    // //     alert("Clicked");
-    // //     // window.location.href = "anime.html";
-    // // });
 });

@@ -8,45 +8,67 @@
     <span class="blue"></span>Welcome to Anime Reminder<span class="blue"></span>
     <!-- <span class="yellow">Responsive</pan> -->
 </h1>
-    
+
 <table id="artb" class="container">
     <thead>
-    <tr>
-        <th><h1>Seasons</h1></th>
-        <th><h1>Episodes</h1></th>
-        <th><h1></h1></th>
-    </tr>
+        <tr>
+            <th>
+                <h1>Seasons</h1>
+            </th>
+            <th>
+                <h1>Episodes</h1>
+            </th>
+            <th>
+                <h1></h1>
+            </th>
+        </tr>
     </thead>
     <tbody id="artbbody">
     </tbody>
 </table>
 <table class="container">
     <thead>
-    <tr>
-    </tr>
+        <tr>
+        </tr>
     </thead>
     <tbody>
-    <tr id="addartr">
-        <td>
-            <h1><a href="#addar" rel="modal:open" style="text-decoration: none; color: #4DC3FA">+</a></h1>
-        </td>
-    </tr>
+        <tr id="addartr">
+            <td>
+                <h1><a href="#addar" rel="modal:open" style="text-decoration: none; color: #4DC3FA">+</a></h1>
+            </td>
+        </tr>
     </tbody>
 </table>
-<div id="addar" class="modal">
-    <h2>Reminder</h2>
-    <div>
-        <label for="sspinner">Season:</label>
-        <input id="sspinner" name="value">
+<div id="addar" class="modal" style="background-color: #f6f5ea;">
+    <h2 style="color: #524dbf;">Reminder</h2>
+    <div class="wrapper">
+        <div>
+            <label for="sspinner" style="padding-right: 2px;">Season</label>
+            <input id="sspinner" name="value" min="1" step="1">
+        </div>
+        <br/>
+        <div>
+            <label for="espinner" style="padding-right: 1px;">Episode</label>
+            <input id="espinner" name="value" min="1" step="1">
+        </div>
     </div>
-    <div>
-        <label for="espinner">Episode:</label>
-        <input id="espinner" name="value">
+    <br/><br/>
+    <div class="wrapper">
+        <button id="addarbtn">
+            <span>Submit</span>
+            <div class="success">
+                <svg xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 29.756 29.756"
+                    style="enable-background:new 0 0 29.756 29.756;" xml:space="preserve">
+                    <path d="M29.049,5.009L28.19,4.151c-0.943-0.945-2.488-0.945-3.434,0L10.172,18.737l-5.175-5.173   c-0.943-0.944-2.489-0.944-3.432,0.001l-0.858,0.857c-0.943,0.944-0.943,2.489,0,3.433l7.744,7.752   c0.944,0.943,2.489,0.943,3.433,0L29.049,8.442C29.991,7.498,29.991,5.953,29.049,5.009z" />
+                </svg>
+            </div>
+        </button>
     </div>
-    <button id="addarbtn" rel="modal:close"><a href="#" rel="modal:close" style="text-decoration: none">Submit</a></button>
+    <br/>
+    <!-- <button id="addarbtn" rel="modal:close"><a href="#" rel="modal:close" style="text-decoration: none">Submit</a></button> -->
 </div>
 {% endblock %}
 
 {% block script %}
-<script type="text/javascript" src = "{{ url_for('static', filename = 'js/anime.js') }}" ></script>
+<script type="text/javascript" src="{{ url_for('static', filename = 'js/anime.js') }}"></script>
 {% endblock %}
