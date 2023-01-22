@@ -27,7 +27,7 @@ def anime():
 
 
 @user_controller.route('/animereminder/ui/user', methods=['GET'])
-# @koidc.require_permission("Default Resource")
+# @koidc.require_permission("user_management")
 @koidc.require_login
 def user():
     return render_template('user.html')
