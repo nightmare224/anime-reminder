@@ -58,7 +58,7 @@
 - name: Issue Certificate
   hosts: master
   roles:
-    - { role: issue-cert, service_name: cert-manager, cert_service_name: anime-reminder, tags: app-service }
+    - { role: issue-cert, service_name: cert-manager, cert_service_name: anime-reminder, cert_service_path: ../../app-service/anime-reminder, tags: app-service }
 
 - name: Deploy app service
   hosts: master

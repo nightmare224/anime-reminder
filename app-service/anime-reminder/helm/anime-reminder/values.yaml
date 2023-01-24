@@ -32,6 +32,12 @@ ui:
 
   resources: {}
 
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 100%
+
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -81,6 +87,12 @@ api:
     sessionAffinity: ClientIP
 
   resources: {}
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 100%
 
   autoscaling:
     enabled: false

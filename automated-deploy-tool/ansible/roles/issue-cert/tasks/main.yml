@@ -1,4 +1,9 @@
 ---
+- name: Transfer {{ cert_service_path }} to master
+  synchronize:
+    src: "{{ cert_service_path }}"
+    dest: /home/{{ ansible_user }}/k8s/deployment
+    
 - name: Issue certificate of {{ cert_service_name }}
   shell: |
     inifile=/home/{{ ansible_user }}/k8s/deployment/{{ cert_service_name }}/config.ini

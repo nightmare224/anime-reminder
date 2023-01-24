@@ -9,6 +9,13 @@ spec:
   {{- if not .Values.api.autoscaling.enabled }}
   replicas: {{ .Values.api.replicaCount }}
   {{- end }}
+  strategy:
+    type: {{ .Values.api.strategy.type }}
+    {{- if (eq "RollingUpdate" .Values.api.strategy.type) }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.api.strategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.api.strategy.rollingUpdate.maxSurge }}
+    {{- end }}
   selector:
     matchLabels:
       {{- include "anime-reminder.selectorLabels" . | nindent 6 }}
