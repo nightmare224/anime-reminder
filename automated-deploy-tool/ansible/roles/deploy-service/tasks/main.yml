@@ -10,13 +10,11 @@
     path: /home/{{ ansible_user }}/k8s/deployment/{{ service_name }}/{{ item }}
     mode: '0755'
   loop:
-    # - check_service.sh
     - deploy.sh
-    # - uninstall.sh
+    - uninstall.sh
   become: yes
 
 - name: Deploy and wait until running
   shell: /home/{{ ansible_user }}/k8s/deployment/{{ service_name }}/deploy.sh
-    
-# - name: Check {{ role_name }} service
-#   shell: /home/{{ ansible_user }}/k8s/deployment/{{ service_name  }}/check_service.sh
+  args:
+    executable: /bin/bash
