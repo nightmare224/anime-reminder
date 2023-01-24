@@ -9,7 +9,7 @@
   hosts: master
   roles:
     - { role: helm, become: yes }
-  tags: helm
+  tags: tool
 
 
 - name: Install k8s
@@ -36,9 +36,8 @@
 - name: Install cluster manage tool
   hosts: master
   roles:
-    - { role: k9s, become: yes }
-    - { role: deploy-service, service_name: kubernetes-dashboard, service_path: ../../monitor-service/kubernetes-dashboard }
-  tags: k8s
+    - { role: k9s, become: yes, tags: tool }
+    # - { role: deploy-service, service_name: kubernetes-dashboard, service_path: ../../monitor-service/kubernetes-dashboard }
 
 - name: Install service requirement # Install open-iscsi nfs-common
   hosts: all
@@ -59,12 +58,10 @@
 - name: Issue Certificate
   hosts: master
   roles:
-    - { role: issue-cert, service_name: cert-manager, cert_service_name: anime-reminder }
+    - { role: issue-cert, service_name: cert-manager, cert_service_name: anime-reminder, tags: app-service }
 
 - name: Deploy app service
   hosts: master
   roles:
-    # - { role: deploy-service, service_name: postgresql, service_path: ../../app-service/postgresql }
-    # - { role: deploy-service, service_name: keycloak, service_path: ../../app-service/keycloak }
     - { role: deploy-service, service_name: anime-reminder, service_path: ../../app-service/anime-reminder }
   tags: app-service

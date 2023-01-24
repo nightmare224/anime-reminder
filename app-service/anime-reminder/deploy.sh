@@ -16,6 +16,10 @@ main() {
 
   LB_EXTERNEL_IP=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
+  log "INFO" "Build docker image and push"
+  bash ./app/api/build.sh
+  bash ./app/ui/build.sh
+
   log "INFO" "Installing ${SERVICE_NAME} with Helm"
   helm upgrade ${SERVICE_NAME} ${HELM_TEMPLATE_PATH} \
     --values ${HELM_TEMPLATE_PATH}values.yaml \

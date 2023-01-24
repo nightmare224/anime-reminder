@@ -29,13 +29,21 @@ main() {
      exit 1
   fi
 
-  # ## Push image to harbor
-  # docker push ${BUILD_IMAGE_NAME}:${BUILD_IMAGE_TAG}
-  # ret_val=$?
-  # if [[ ${ret_val} != 0 ]]; then
-  #    log "ERROR" "Failed to push ${BUILD_IMAGE_NAME}:${BUILD_IMAGE_TAG} image to harbor"
-  #    exit 2
-  # fi
+  ## Docker login
+  docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+  ret_val=$?
+  if [[ ${ret_val} != 0 ]]; then
+    log "ERROR" "Failed to login to docker user ${DOCKER_USERNAME}"
+    exit 2
+  fi
+
+  ## Push image to docker registry
+  docker push ${BUILD_IMAGE_NAME}:${BUILD_IMAGE_TAG}
+  ret_val=$?
+  if [[ ${ret_val} != 0 ]]; then
+    log "ERROR" "Failed to push ${BUILD_IMAGE_NAME}:${BUILD_IMAGE_TAG} image to docker registry"
+    exit 3
+  fi
 }
 
 main "$@"

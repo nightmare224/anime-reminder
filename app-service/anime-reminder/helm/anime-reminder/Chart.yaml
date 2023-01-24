@@ -1,6 +1,6 @@
 apiVersion: v2
 name: anime-reminder
-description: A Helm chart for Kubernetes
+description: A Helm chart for Anime Reminder. This helm chart contain the PostgreSQL, Keycloak, and Anime Reminder.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -22,3 +22,9 @@ version: 1.0.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "1.0.0"
+
+maintainers:
+  - name: Nicole Tai
+    email: nicole1999224@gmail.com
+  - name: Sam Tu
+    email: yssamtu@gmail.com
