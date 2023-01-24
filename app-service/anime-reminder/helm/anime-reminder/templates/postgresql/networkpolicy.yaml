@@ -1,0 +1,31 @@
+{{- if .Values.postgresql.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "anime-reminder.postgresql" . }}
+  labels:
+    {{- include "anime-reminder.labels" . | nindent 4 }}
+    component: postgresql
+spec:
+  policyTypes:
+    - Ingress
+    - Egress
+  podSelector:
+    matchLabels:
+      {{- include "anime-reminder.selectorLabels" . | nindent 6 }}
+      component: postgresql
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              {{- include "anime-reminder.selectorLabels" . | nindent 14 }}
+            matchExpressions:
+              - {key: component, operator: In, values: [keycloak, api]}
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              {{- include "anime-reminder.selectorLabels" . | nindent 14 }}
+            matchExpressions:
+              - {key: component, operator: In, values: [keycloak, api]}
+{{- end }}

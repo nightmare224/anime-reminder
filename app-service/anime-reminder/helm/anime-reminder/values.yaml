@@ -492,6 +492,10 @@ postgresql:
     type: ClusterIP
     annotations: {}
 
+  networkPolicy:
+    # If true, the Network policies are deployed
+    enabled: true
+
   ldap:
     enabled: false
     pgldapconfig: |-
