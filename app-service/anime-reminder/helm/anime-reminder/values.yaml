@@ -54,10 +54,18 @@ ui:
   healthCheck:
     enabled: false
 
+
   devMode:
     enabled: false
     codePathOfLocal: /home/thl/Documents/softwareContainerization/final-project/app-service/anime-reminder/app/ui/src
     codePathOfPod: /opt/src
+
+  canary:
+    enabled: true
+    replicaCount: 1
+    image:
+      repository: nightmare224/anime-reminder-ui
+      tag: "latest"
 
 
 api:
@@ -124,6 +132,13 @@ api:
     enabled: false
     codePathOfLocal: /home/thl/Documents/softwareContainerization/final-project/app-service/anime-reminder/app/api/src
     codePathOfPod: /opt/src
+
+  canary:
+    enabled: true
+    replicaCount: 1
+    image:
+      repository: nightmare224/anime-reminder-api
+      tag: "latest"
 
 keycloak:
   replicaCount: 1
