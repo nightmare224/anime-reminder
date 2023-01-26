@@ -1,8 +1,8 @@
-{{- if .Values.ui.canary.enabled }}
+{{- if .Values.api.canary.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "anime-reminder.api" . }}
+  name: {{ include "anime-reminder.api" . }}-canary
   labels:
     {{- include "anime-reminder.labels" . | nindent 4 }}
     component: api

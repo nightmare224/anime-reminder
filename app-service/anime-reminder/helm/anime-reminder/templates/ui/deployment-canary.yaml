@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "anime-reminder.ui" . }}
+  name: {{ include "anime-reminder.ui" . }}-canary
   labels:
     {{- include "anime-reminder.labels" . | nindent 4 }}
     component: ui

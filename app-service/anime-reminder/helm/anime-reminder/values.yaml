@@ -61,11 +61,11 @@ ui:
     codePathOfPod: /opt/src
 
   canary:
-    enabled: true
+    enabled: false
     replicaCount: 1
     image:
       repository: nightmare224/anime-reminder-ui
-      tag: "latest"
+      tag: "1.0.1"
 
 
 api:
@@ -134,7 +134,7 @@ api:
     codePathOfPod: /opt/src
 
   canary:
-    enabled: true
+    enabled: false
     replicaCount: 1
     image:
       repository: nightmare224/anime-reminder-api
@@ -490,6 +490,7 @@ postgresql:
 
   persistence:
     enabled: true
+    storageClass: longhorn
     mountPath: /var/lib/postgresql
     subPath: ""
     accessModes:  [ReadWriteOnce]

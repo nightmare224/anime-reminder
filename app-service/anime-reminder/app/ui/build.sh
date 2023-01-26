@@ -25,8 +25,8 @@ main() {
 	
   ret_val=$?
   if [[ ${ret_val} != 0 ]]; then
-     log "ERROR" "Failed to build ${BUILD_IMAGE_NAME}:${BUILD_IMAGE_TAG} image"
-     exit 1
+    log "ERROR" "Failed to build ${BUILD_IMAGE_NAME}:${BUILD_IMAGE_TAG} image"
+    exit 1
   fi
 
   ## Docker login
