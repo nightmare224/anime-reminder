@@ -38,16 +38,8 @@ main() {
     --namespace ${SERVICE_NAMESPACE} \
     --install \
     --wait \
-    --timeout=60s 2>/dev/null
-  
-  log "INFO" "Deploy an self-sign Issuer."
-  deploy ${ISSUER_PATH}/self-sign-issuer.yaml
+    --timeout=600s
 
-  log "INFO" "Deploy Certificate Object requesting certificate from self-sign issuer"
-  deploy ${ISSUER_PATH}/certificate.yaml
-  
-  log "INFO" "Deploy an Issuer equipped with the certificate signed by self-sign issuer"
-  deploy ${ISSUER_PATH}/ca-issuer.yaml
 }
 
 main "$@"

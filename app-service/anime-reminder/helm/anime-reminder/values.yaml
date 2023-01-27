@@ -592,7 +592,8 @@ ingress:
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/affinity-mode: persistent
     nginx.ingress.kubernetes.io/app-root: /animereminder/ui/home
-    # kubernetes.io/tls-acme: "true"
+    cert-manager.io/common-name: anime-reminder-cert
+    cert-manager.io/issuer: anime-reminder-issuer
   hosts:
     - host: sc23.group40.io
       paths:
