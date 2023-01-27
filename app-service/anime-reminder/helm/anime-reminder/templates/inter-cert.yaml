@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-inter-cert
+spec:
+  commonName: "selfsigned-inter-cert"
+  secretName: selfsigned-inter-secret
+  isCA: true
+  issuerRef:
+    name: selfsigned-inter-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+  duration: 175200h0m0s
+  renewBefore: 24h0m0s
