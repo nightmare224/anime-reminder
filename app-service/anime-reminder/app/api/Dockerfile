@@ -10,6 +10,7 @@ RUN apt update
 RUN apt install python3-dev python3-pip python3-venv -y
 RUN apt install libpq-dev -y
 RUN apt install libpq-dev unzip -y
+RUN apt install jq -y
 
 ### Args define
 ARG WORKDIR_PATH
