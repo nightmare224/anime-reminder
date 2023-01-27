@@ -10,6 +10,7 @@ loadBalancerClass: ""
 ipaddresspool:
   name: default
   ipaddress: 192.168.0.110
+  autoAssign: true
 
 
 # To configure MetalLB, you must specify ONE of the following two
