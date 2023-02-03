@@ -28,7 +28,13 @@ $("document").ready(function(){
                 headers: {"Authorization": "Bearer " + keycloak.access_token },
                 data: JSON.stringify(payload),
                 dataType: "json",
-                contentType: "application/json"
+                contentType: "application/json",
+                statusCode: {
+                    404: function() {
+                        alert("anime not found");
+                        location.reload();
+                    }
+                }
             }).done(function (rsp) {
                 // add new anime on page
                 var row = `
