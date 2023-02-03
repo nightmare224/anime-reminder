@@ -167,7 +167,7 @@ service:
 ingress:
   ## If true, Kubernetes Dashboard Ingress will be created.
   ##
-  enabled: false
+  enabled: true
 
   ## Kubernetes Dashboard Ingress labels
   # labels:
@@ -215,14 +215,14 @@ ingress:
   ## Must be provided if Ingress is enabled
   ##
   hosts:
-    - sc23.group40.io
+    - sc23.group40-monitor.io
   ## Kubernetes Dashboard Ingress TLS configuration
   ## Secrets must be manually created in the namespace
   ##
   tls:
-    - secretName: kubernetes-dashboard-tls
+    - secretName: dashboard-tls-secret
       hosts:
-        - kubernetes-dashboard.domain.com
+        - sc23.group40-monitor.io
 
 # Global dashboard settings
 settings:
@@ -314,10 +314,10 @@ rbac:
 
 serviceAccount:
   # Specifies whether a service account should be created
-  create: true
+  create: false
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: admin-user
+  name:
 
 livenessProbe:
   # Number of seconds to wait before sending first probe

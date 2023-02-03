@@ -22,7 +22,7 @@ main() {
     --wait \
     --timeout=300s
 
-  log "INFO" "Type kubectl -n kubernetes-dashboard create token admin-user to get token"
+  log "INFO" "Type kubectl -n kubernetes-dashboard create token <SVCACCT> to get token"
 }
 
 main "$@"

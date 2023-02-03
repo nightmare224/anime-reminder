@@ -37,7 +37,7 @@
   hosts: master
   roles:
     - { role: k9s, become: yes, tags: tool }
-    # - { role: deploy-service, service_name: kubernetes-dashboard, service_path: ../../monitor-service/kubernetes-dashboard }
+    - { role: deploy-service, service_name: kubernetes-dashboard, service_path: ../../monitor-service/kubernetes-dashboard, tags: tool  }
 
 - name: Install service requirement # Install open-iscsi nfs-common
   hosts: all
