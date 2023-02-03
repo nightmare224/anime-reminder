@@ -11,7 +11,7 @@ from lib.db.db_manager import DBManager
 from controllers.user_controller import user_controller
 from controllers.anime_controller import anime_controller
 from controllers.error_controller import error_controller
-
+from init import init_anime
 
 ##### Setting #####
 config_parser = ConfigParser()
@@ -39,6 +39,7 @@ app.register_blueprint(error_controller)
 
 # keycloak
 koidc = KeycloakOIDCBackendFlask(f"./lib/keycloak/secrets/anime-reminder-secrets.json")
+init_anime()
 
 if __name__ == '__main__':
     app.run(

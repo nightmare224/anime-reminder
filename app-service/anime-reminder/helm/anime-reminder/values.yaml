@@ -516,6 +516,10 @@ postgresql:
     # initdbWalDir
     dataDir: /var/lib/postgresql/data/pgdata
 
+  extraEnvFrom: |
+    - secretRef: 
+        name: anime-reminder-common
+
   service:
     type: ClusterIP
     annotations: {}

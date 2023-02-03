@@ -59,9 +59,9 @@ spec:
 {{ toYaml .Values.resources | indent 10 }}
         env:
         - name: POSTGRES_PASSWORD
-          value: {{ .Values.postgresql.postgresql.password | quote }}
+          value: "$(DB_PASSWORD)"
         - name: POSTGRES_USER
-          value: {{ .Values.postgresql.postgresql.username | quote }}
+          value: "$(DB_USER)"
         - name: POSTGRES_DB
           value: {{ .Values.postgresql.postgresql.database | quote }}
         {{- if .Values.postgresql.postgresql.initdbArgs }}
@@ -76,9 +76,10 @@ spec:
         - name: PGDATA
           value: {{ .Values.postgresql.postgresql.dataDir | quote }}
         {{- end }}
-{{- if .Values.postgresql.extraEnv }}
-{{ tpl (toYaml .Values.postgresql.extraEnv) $ | indent 8 }}
-{{- end }}
+        envFrom:
+        {{- with .Values.postgresql.extraEnvFrom }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
         ports:
         - name: postgresql
           containerPort: {{ .Values.postgresql.postgresql.port }}

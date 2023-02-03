@@ -37,21 +37,28 @@ def create_anime():
     
     request_data = request.get_json()
     try:
-        anime = Anime(**request_data)
+        animes = []
+        for anime in request_data:
+            anime = Anime(**anime)
+            animes.append(anime)
     except TypeError as e:
         raise OtherBadRequest('Invalid request data: %s'%e)
 
-    anime.anime_id = str(uuid1())
-    # anime.anime_name
-    anime_db = Anime_DB(
-        anime_id = anime.anime_id,
-        anime_name = anime.anime_name
-    )
     with DBManager().session_ctx() as session:
-        session.add(anime_db)
+        
+        for anime in animes:
+            anime.anime_id = str(uuid1())
+            # anime.anime_name
+            anime_db = Anime_DB(
+                anime_id = anime.anime_id,
+                anime_name = anime.anime_name
+            )
+            session.add(anime_db)
 
-    resp = Create(payload = anime)
+
+    resp = Create(payload = animes)
     return jsonify(resp.payload), resp.status_code
+
 
 # @anime_controller.route('/animereminder/api/v1/anime/<anime_id>', methods=['PUT'])
 # # @koidc.require_permission("Default Resource")
