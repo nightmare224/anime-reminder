@@ -70,13 +70,122 @@ To install Anime Reminder, follow the below steps:
 ## Features
 
 ### Architecture
-<img src="https://github.com/nightmare224/anime-reminder/blob/master/docs/images/architecture.png" alt="architecture" width="870" height="500" />
 
-In this repository, you can see four directories which is [**app-service**](https://github.com/nightmare224/anime-reminder/tree/master/app-service), [**automated-deploy-tool**](https://github.com/nightmare224/anime-reminder/tree/master/automated-deploy-tool), [**infra-service**](https://github.com/nightmare224/anime-reminder/tree/master/infra-service), and [**monitor-service**](https://github.com/nightmare224/anime-reminder/tree/master/monitor-service).
+The components in the Kubernetes cluster that would be deployed by Ansible are briefly shown as below:
 
-### App-service
-The Anime Reminder application is composed of four components which is **Keycloak**, **PostgreSQL**, UI frontend, and API backend.
+<img src="https://github.com/nightmare224/anime-reminder/blob/master/docs/images/architecture.png" alt="architecture"/>
 
+In this repository, you can find there are four directories: [**app-service**](https://github.com/nightmare224/anime-reminder/tree/master/app-service), [**infra-service**](https://github.com/nightmare224/anime-reminder/tree/master/infra-service), [**monitor-service**](https://github.com/nightmare224/anime-reminder/tree/master/monitor-service), and [**automated-deploy-tool**](https://github.com/nightmare224/anime-reminder/tree/master/automated-deploy-tool) which are corresponding to the picture.
 
+***
 
+### app-service
+
+The Anime Reminder application is composed of four components which is **Keycloak**, **PostgreSQL**, **UI**, and **API.** 
+
+#### Manually Install
+
+The helm chart of our application which contains these 4 components can be found [here](https://github.com/nightmare224/anime-reminder/tree/master/app-service/anime-reminder/helm). To deploy this anime-reminder helm chart manually not by Ansible, you can execute:
+
+```bash
+bash anime-reminder/app-service/anime-reminder/deploy.sh
+```
+
+If you would like to change the username and password of PostgreSQL and Keycloak, change the value of **[POSTGRESQL-CONFIG]** and **[KEYCLOAK-CONFIG]** section in [anime-reminder/app-service/anime-reminder/config.ini](https://github.com/nightmare224/anime-reminder/blob/master/app-service/anime-reminder/config.ini) before you run `deploy.sh`.
+
+```ini
+[SERVICE-CONFIG]
+  HELM_TEMPLATE_PATH="helm/anime-reminder/"
+  SERVICE_NAME="anime-reminder"
+  SERVICE_NAMESPACE="anime-reminder"
+  DOMAIN_NAME="sc23.group40.io"
+
+[POSTGRESQL-CONFIG]
+  POSTGRESQL_USER="postgres"
+  POSTGRESQL_PASSWORD="pganimereminder"
+
+[KEYCLOAK-CONFIG]
+  KEYCLOAK_USER="admin"
+  KEYCLOAK_PASSWORD="admin"
+```
+
+#### Keycloak
+
+The helm chart of Keycloak is based on [codecentric/keycloak](https://artifacthub.io/packages/helm/codecentric/keycloak). We add some our own configuration and then merge it in to our anime-reminder helm chart.
+
+#### PostgreSQL
+
+The helm chart of PostgreSQL is based on [cetic/postgresql](https://artifacthub.io/packages/helm/cetic/postgresql). We add some our own configuration and then merge it in to our anime-reminder helm chart.
+
+#### UI
+
+The UI of anime-reminder is developed in Python Flask framework. The source code can be found in [**anime-reminder/app-service/anime-reminder/app/ui**]( https://github.com/nightmare224/anime-reminder/tree/master/app-service/anime-reminder/app/ui).
+
+#### API
+
+The API of anime-reminder is developed in Python Flask framework. The source code can be found in [**anime-reminder/app-service/anime-reminder/app/api**]( https://github.com/nightmare224/anime-reminder/tree/master/app-service/anime-reminder/app/api).
+
+***
+
+### infra-service
+
+There are several infrastature services underlay Anime Reminder application which is **Calico**, **MetalLB**, **Ingress Nginx**, **Longhorn**, and **Cert Manager**.
+
+#### Manually Install
+
+To deploy those services manually not by Ansible, run the `deploy.sh` in the directory of the service that you want to install:
+
+```bash
+bash anime-reminder/infra-service/<SERVICE NAME>/deploy.sh
+```
+
+#### Calico
+
+The helm chart of Calico is from [here](https://artifacthub.io/packages/helm/projectcalico/tigera-operator).
+
+#### MetalLB
+
+The helm chart of MetalLB is from [here](https://artifacthub.io/packages/helm/metallb/metallb).
+
+#### Ingress Nginx
+
+The yaml file of Ingress Nginx is from [here](https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/aws/deploy.yaml).
+
+#### Longhorn
+
+The helm chart of Longhorn is from [here](https://artifacthub.io/packages/helm/longhorn/longhorn).
+
+#### Cert Manager
+
+The helm chart of Cert Manager is from [here](https://artifacthub.io/packages/helm/cert-manager/cert-manager).
+
+***
+
+### monitor-service
+
+There are two monitor tool would be installed in the cluster which is **K9s** and **Kubernetes Dashboard**
+
+#### Manually Install
+
+To deploy those services manually not by Ansible, run the `deploy.sh` in the directory of the service that you want to install:
+
+```bash
+bash anime-reminder/monitor-service/<SERVICE NAME>/deploy.sh
+```
+
+#### K9s
+
+For convenience, we have already compiled the source code to the executable file in [here]().
+
+#### Kubernetes Dashboard
+
+The helm chart of Kubernetes Dashboard is from [here](https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard).
+
+There are two service account for Kuberenets Dashboard, which is **app-developer** and **infra-developer**. The app-developer can only access the **anime-reminder namespace**. The infra-developer can access **all namespaces**.
+
+To get the token of these service accounts, run the below command in master node:
+
+```bash
+kubectl -n kubernetes-dashboard create token <SVCACCT>
+```
 
