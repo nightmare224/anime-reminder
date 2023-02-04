@@ -70,8 +70,7 @@ To install Anime Reminder, follow the below steps:
 ## Features
 
 ### Architecture
-![architecture](https://github.com/nightmare224/anime-reminder/tree/master/docs/images/architecture.png)
-
+<img src="https://github.com/nightmare224/anime-reminder/blob/master/docs/images/architecture.png" alt="architecture" width="870" height="500" />
 
 In this repository, you can see four directories which is [**app-service**](https://github.com/nightmare224/anime-reminder/tree/master/app-service), [**automated-deploy-tool**](https://github.com/nightmare224/anime-reminder/tree/master/automated-deploy-tool), [**infra-service**](https://github.com/nightmare224/anime-reminder/tree/master/infra-service), and [**monitor-service**](https://github.com/nightmare224/anime-reminder/tree/master/monitor-service).
 
