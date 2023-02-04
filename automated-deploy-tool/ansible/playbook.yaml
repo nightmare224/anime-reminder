@@ -9,7 +9,7 @@
   hosts: master
   roles:
     - { role: helm, become: yes }
-  tags: tool
+  tags: k8s
 
 
 - name: Install k8s
@@ -33,11 +33,11 @@
     - { role: k8s-worker-init, become: yes }
   tags: k8s
 
-- name: Install cluster manage tool
+- name: Install cluster monitor-service
   hosts: master
   roles:
-    - { role: deploy-service, service_name: k9s, service_path: ../../monitor-service/k9s, become: yes, tags: tool }
-    - { role: deploy-service, service_name: kubernetes-dashboard, service_path: ../../monitor-service/kubernetes-dashboard, tags: tool  }
+    - { role: deploy-service, service_name: k9s, service_path: ../../monitor-service/k9s, become: yes, tags: monitor-service }
+    - { role: deploy-service, service_name: kubernetes-dashboard, service_path: ../../monitor-service/kubernetes-dashboard, tags: monitor-service  }
 
 - name: Install service requirement # Install open-iscsi nfs-common
   hosts: all

@@ -189,3 +189,46 @@ To get the token of these service accounts, run the below command in master node
 kubectl -n kubernetes-dashboard create token <SERVICE ACCOUNT>
 ```
 
+
+
+***
+
+### automated-deploy-tool
+
+There are two parts in these folder: Vagrant and Ansible.
+
+#### Vagrant
+
+This [Vagrantfile](https://github.com/nightmare224/anime-reminder/blob/master/automated-deploy-tool/vagrant.nosync/Vagrantfile) would create three virtual machines on VMWare. Each of them would have 2 CPU cores and 4 Gi Memory. Those machine would get the IP Address by DHCP, so you would have to go check the IP Address by yourself after the VM created.
+
+#### Ansible
+
+As we introduce in [Install](https://github.com/nightmare224/anime-reminder#install) section, executing `bash anime-reminder/automated-deploy-tool/ansible/run.sh` would trigger the Ansible playbook to setup Kubernetes cluster on target machines and deploy [**app-service**](https://github.com/nightmare224/anime-reminder/tree/master/app-service), [**infra-service**](https://github.com/nightmare224/anime-reminder/tree/master/infra-service), and [**monitor-service**](https://github.com/nightmare224/anime-reminder/tree/master/monitor-service).
+
+If you don't want the Ansible deploy everything, you can only tick the box you want to deploy in [**anime-reminder/automated-deploy-tool/ansible/taglist**](https://github.com/nightmare224/anime-reminder/blob/master/automated-deploy-tool/ansible/taglist).
+
+For example, this would deploy all the components.
+
+```
+[v] k8s
+[v] monitor-service
+[v] infra-service
+[v] app-service
+```
+
+and this would only deploy **monitor-service**.
+
+```
+[x] k8s
+[v] monitor-service
+[x] infra-service
+[x] app-service
+```
+
+>k8s: Install and setup Kubernetes cluster on target machines
+>
+>monitor-service: K9s and Kubernetes Dashboard
+>
+>infra-service: Calico, Cert Manager, Ingress Nginx, Longhorn, and MetalLB
+>
+>app-service: Anime Reminder application including PostgreSQL, Keycloak, UI, and API.
