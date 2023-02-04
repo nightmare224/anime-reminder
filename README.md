@@ -65,6 +65,12 @@ To install Anime Reminder, follow the below steps:
    bash anime-reminder/automated-deploy-tool/ansible/run.sh
    ```
 
+### Usage
+
+After all the services is running, access https://sc23.group40.io to see your Anime Reminder.
+
+**Note**: Remember to add the mapping of **sc23.group40.io** to **LB_EXTERNEL_IP**  in `/etc/hosts` before access the web application.
+
 
 
 ## Features
@@ -85,7 +91,7 @@ The Anime Reminder application is composed of four components which is **Keycloa
 
 #### Manually Install
 
-The helm chart of our application which contains these 4 components can be found [here](https://github.com/nightmare224/anime-reminder/tree/master/app-service/anime-reminder/helm). To deploy this anime-reminder helm chart manually not by Ansible, you can execute:
+The helm chart of our application which contains these 4 components can be found [here](https://github.com/nightmare224/anime-reminder/tree/master/app-service/anime-reminder/helm). To deploy this anime-reminder helm chart manually not by Ansible, you can execute below command in k8s master node:
 
 ```bash
 bash anime-reminder/app-service/anime-reminder/deploy.sh
@@ -112,6 +118,8 @@ If you would like to change the username and password of PostgreSQL and Keycloak
 #### Keycloak
 
 The helm chart of Keycloak is based on [codecentric/keycloak](https://artifacthub.io/packages/helm/codecentric/keycloak). We add some our own configuration and then merge it in to our anime-reminder helm chart.
+
+If you would like to visit the Keycloak, access https://sc23.group40.io/auth. The default keycloak admin username/password is **admin**/**admin**.
 
 #### PostgreSQL
 
@@ -167,7 +175,7 @@ There are two monitor tools would be installed in the cluster which is **K9s** a
 
 #### Manually Install
 
-To deploy those services manually not by Ansible, run the `deploy.sh` in the directory of the service that you want to install:
+To deploy those services manually not by Ansible, run the `deploy.sh` in the directory of the service that you want to install in k8s master node:
 
 ```bash
 bash anime-reminder/monitor-service/<SERVICE NAME>/deploy.sh
@@ -180,6 +188,8 @@ For convenience, we have already compiled the source code to the executable file
 #### Kubernetes Dashboard
 
 The helm chart of Kubernetes Dashboard is from [here](https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard).
+
+If you would like to visit the Kubernetes Dashboard, access https://sc23.group40-monitor.io.
 
 There are two service account for Kuberenets Dashboard, which is **app-developer** and **infra-developer**. The app-developer can only access the **anime-reminder namespace**. The infra-developer can access **all namespaces**.
 
@@ -232,3 +242,119 @@ and this would only deploy **monitor-service**.
 >infra-service: Calico, Cert Manager, Ingress Nginx, Longhorn, and MetalLB
 >
 >app-service: Anime Reminder application including PostgreSQL, Keycloak, UI, and API.
+
+
+
+## Test
+
+Here we provide some scenario and command to test the ability of our application and its underly infrastruture.
+
+### Update application after source code change
+
+When we modify the source code in UI or API, we will have to **rebuild the docker image** and do **helm upgrade**.
+
+After modified the code, follow below steps to rebuild and update.
+
+1. Configure Docker username, password, image name, and image tag in [anime-reminder/app-service/anime-reminder/app/ui/config.ini](https://github.com/nightmare224/anime-reminder/blob/master/app-service/anime-reminder/app/ui/config.ini) or [anime-reminder/app-service/anime-reminder/app/api/config.ini](https://github.com/nightmare224/anime-reminder/blob/master/app-service/anime-reminder/app/api/config.ini)
+
+   ```ini
+   [BUILD-IMAGE-CONFIG]
+     BUILD_IMAGE_NAME="nightmare224/anime-reminder-ui"
+     BUILD_IMAGE_TAG="1.0.1"
+     BUILD_NO_CACHE=false
+     SRCCODE_PATH="src"
+     WORKDIR_PATH="/opt"
+     SERVICE_PORT=80
+   
+   [PUSH-IMAGE-CONFIG]
+     DOCKER_USERNAME="nightmare224"
+     DOCKER_PASSWORD="efreet224"
+   ```
+
+   ```ini
+   [BUILD-IMAGE-CONFIG]
+     BUILD_IMAGE_NAME="nightmare224/anime-reminder-api"
+     BUILD_IMAGE_TAG="1.0.0"
+     BUILD_NO_CACHE=false
+     SRCCODE_PATH="src"
+     WORKDIR_PATH="/opt"
+     SERVICE_PORT=80
+   
+   [PUSH-IMAGE-CONFIG]
+     DOCKER_USERNAME="nightmare224"
+     DOCKER_PASSWORD="********"
+   ```
+
+2. Configure the image name and image tag in [anime-reminder/app-service/anime-reminder/helm/anime-reminder/values.yaml](https://github.com/nightmare224/anime-reminder/blob/master/app-service/anime-reminder/helm/anime-reminder/values.yaml)
+
+   ```yaml
+   ui:
+     replicaCount: 2
+     image:
+       repository: nightmare224/anime-reminder-ui
+       pullPolicy: Always
+       tag: "1.0.1"
+   ...
+   
+   api:
+   	replicaCount: 2
+     image:
+       repository: nightmare224/anime-reminder-api
+       pullPolicy: Always
+       tag: "1.0.0"
+   
+   ...
+   ```
+
+3. Build and update the application
+
+   Through Ansilbe:
+
+   ```bash
+   bash anime-reminder/automated-deploy-tool/ansible/run.sh
+   ```
+
+   Manually in k8s master node:
+
+   ```bash
+   bash anime-reminder/app-service/anime-reminder/deploy.sh
+   ```
+
+
+
+### Network Policy Verify
+
+We only allow Keycloak and API connection to PostgreSQL. We can verify this network policy by connecting to PostgreSQL through psql command in Keycloak, API, and UI pods.
+
+After getting into a shell of a container, execute below command:
+
+```bash
+apt-get install postgresql-client -y
+psql postgres://<PG USERNAME>:<PG PASSWORD>@ar-postgresql.anime-reminder.svc.cluster.local/animereminder
+```
+
+>If you didn't configure the username and password of PostgreSQL, the default username is **postgres** and the password is **pganimereminder**
+
+In the pod of Keycloak and API, the connection with database would succeed. But in the pod of UI, it would timeout and failed.
+
+
+
+### RBAC Verify
+
+Visit Kuberenetes Dashboard at https://sc23.group40-monitor.io
+
+First login as **app-developer**, the token can be generate by running below command in master node:
+
+```bash
+kubectl -n kubernetes-dashboard create token app-developer
+```
+
+The app-developer can only access anime-reminder namesapce.
+
+And then login as infra-developer, the token can be generate by running below command in master node:
+
+```bash
+kubectl -n kubernetes-dashboard create token infra-developer
+```
+
+The infra-developer can only access all namesapces.
