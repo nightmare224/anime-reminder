@@ -163,7 +163,7 @@ The helm chart of Cert Manager is from [here](https://artifacthub.io/packages/he
 
 ### monitor-service
 
-There are two monitor tool would be installed in the cluster which is **K9s** and **Kubernetes Dashboard**
+There are two monitor tools would be installed in the cluster which is **K9s** and **Kubernetes Dashboard**
 
 #### Manually Install
 
@@ -175,7 +175,7 @@ bash anime-reminder/monitor-service/<SERVICE NAME>/deploy.sh
 
 #### K9s
 
-For convenience, we have already compiled the source code to the executable file in [here]().
+For convenience, we have already compiled the source code to the executable file in [here](https://github.com/nightmare224/anime-reminder/tree/master/monitor-service/k9s/files/k9s).
 
 #### Kubernetes Dashboard
 
@@ -186,6 +186,6 @@ There are two service account for Kuberenets Dashboard, which is **app-developer
 To get the token of these service accounts, run the below command in master node:
 
 ```bash
-kubectl -n kubernetes-dashboard create token <SVCACCT>
+kubectl -n kubernetes-dashboard create token <SERVICE ACCOUNT>
 ```
 
