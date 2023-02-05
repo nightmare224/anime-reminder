@@ -297,7 +297,7 @@ After modified the code, follow below steps to rebuild and update.
    ...
    
    api:
-   	replicaCount: 2
+     replicaCount: 2
      image:
        repository: nightmare224/anime-reminder-api
        pullPolicy: Always
