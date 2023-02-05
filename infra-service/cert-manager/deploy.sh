@@ -38,7 +38,7 @@ main() {
     --namespace ${SERVICE_NAMESPACE} \
     --install \
     --wait \
-    --timeout=600s
+    --timeout=300s
 
 }
 

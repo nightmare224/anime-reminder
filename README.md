@@ -1,7 +1,7 @@
 # Anime Reminder
 
 ## Introduction
-Anime Reminder is a web application for recording the season and episode of anime you had watched. 
+[Anime Reminder](https://github.com/nightmare224/anime-reminder) is a web application for recording the season and episode of anime you had watched. 
 Register your own account and create your own anime list and keep track of your progress.
 
 Besides the web application itself, Anime Reminder provide the [Ansible](https://github.com/ansible/ansible) playbook to build the Kubernetes cluster and deploy the required infrastrature on it.
