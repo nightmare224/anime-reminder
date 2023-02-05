@@ -23,7 +23,6 @@ def init_anime():
     
     with DBManager().session_ctx() as session:
         for anime_name in list(set(anime_name_list)):
-            print(anime_name)
             anime_db = Anime_DB(
                 anime_id = str(uuid1()),
                 anime_name = anime_name
